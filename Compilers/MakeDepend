@@ -1,0 +1,115 @@
+bathsoap.o: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h proj.h
+bathsoap.f90: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h proj.h
+
+bathsuds.o: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h proj.h
+bathsuds.f90: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h proj.h
+
+bathtub.o: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h
+bathtub.f90: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h
+
+coast.o: coast.h proj.h
+coast.f90: coast.h proj.h
+
+grid.o: ncgrid.h griddefs.h gridid.h grid.h bathy.h gridparam.h griddefs.h
+grid.f90: ncgrid.h griddefs.h gridid.h grid.h bathy.h gridparam.h griddefs.h
+
+mapbath.o: griddefs.h
+mapbath.f90: griddefs.h
+
+sphere.o: sphereflags.h ncgrid.h bathy.h gridparam.h griddefs.h gridid.h proj.h
+sphere.f90: sphereflags.h ncgrid.h bathy.h gridparam.h griddefs.h gridid.h
+sphere.f90: proj.h
+
+sqgrid.o: ncgrid.h griddefs.h gridid.h grid.h bathy.h gridparam.h griddefs.h
+sqgrid.f90: ncgrid.h griddefs.h gridid.h grid.h bathy.h gridparam.h griddefs.h
+
+tolat.o: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h proj.h
+tolat.f90: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h proj.h
+
+blktri.o: griddefs.h
+blktri.f90: griddefs.h
+
+checkdefs.o: ncgrid.h grid.h bathy.h gridparam.h griddefs.h
+checkdefs.f90: ncgrid.h grid.h bathy.h gridparam.h griddefs.h
+
+comf.o: griddefs.h
+comf.f90: griddefs.h
+
+cpsfill.o: griddefs.h
+cpsfill.f90: griddefs.h
+
+def_grid.o: ncgrid.h griddefs.h grid.h bathy.h gridparam.h griddefs.h
+def_grid.f90: ncgrid.h griddefs.h grid.h bathy.h gridparam.h griddefs.h
+
+drawcoast.o: griddefs.h
+drawcoast.f90: griddefs.h
+
+extract.o: griddefs.h
+extract.f90: griddefs.h
+
+genbun.o: griddefs.h
+genbun.f90: griddefs.h
+
+geodesic_dist.o: griddefs.h
+geodesic_dist.f90: griddefs.h
+
+get_date.o: griddefs.h
+get_date.f90: griddefs.h
+
+get_h.o: ncgrid.h bathy.h gridparam.h griddefs.h
+get_h.f90: ncgrid.h bathy.h gridparam.h griddefs.h
+
+get_lat.o: ncgrid.h bathy.h gridparam.h griddefs.h
+get_lat.f90: ncgrid.h bathy.h gridparam.h griddefs.h
+
+get_mn.o: ncgrid.h bathy.h gridparam.h griddefs.h
+get_mn.f90: ncgrid.h bathy.h gridparam.h griddefs.h
+
+get_rmask.o: ncgrid.h bathy.h gridparam.h griddefs.h
+get_rmask.f90: ncgrid.h bathy.h gridparam.h griddefs.h
+
+get_xy.o: ncgrid.h bathy.h gridparam.h griddefs.h
+get_xy.f90: ncgrid.h bathy.h gridparam.h griddefs.h
+
+gnbnaux.o: griddefs.h
+gnbnaux.f90: griddefs.h
+
+opencdf.o: ncgrid.h bathy.h gridparam.h griddefs.h
+opencdf.f90: ncgrid.h bathy.h gridparam.h griddefs.h
+
+ploth.o: bathy.h gridparam.h griddefs.h
+ploth.f90: bathy.h gridparam.h griddefs.h
+
+sepaux.o: griddefs.h
+sepaux.f90: griddefs.h
+
+sepeli.o: griddefs.h
+sepeli.f90: griddefs.h
+
+sepx4.o: griddefs.h
+sepx4.f90: griddefs.h
+
+start_plot.o: griddefs.h
+start_plot.f90: griddefs.h
+
+uv_mask.o: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h
+uv_mask.f90: ncgrid.h bathy.h gridparam.h griddefs.h gridid.h
+
+vminmax.o: griddefs.h
+vminmax.f90: griddefs.h
+
+wrt_all.o: ncgrid.h bathy.h gridparam.h griddefs.h proj.h
+wrt_all.f90: ncgrid.h bathy.h gridparam.h griddefs.h proj.h
+
+wrt_fhmn.o: ncgrid.h bathy.h gridparam.h griddefs.h proj.h
+wrt_fhmn.f90: ncgrid.h bathy.h gridparam.h griddefs.h proj.h
+
+wrt_h.o: ncgrid.h bathy.h gridparam.h griddefs.h proj.h
+wrt_h.f90: ncgrid.h bathy.h gridparam.h griddefs.h proj.h
+
+wrt_lat.o: ncgrid.h bathy.h gridparam.h griddefs.h proj.h
+wrt_lat.f90: ncgrid.h bathy.h gridparam.h griddefs.h proj.h
+
+wrt_mask.o: ncgrid.h bathy.h gridparam.h griddefs.h
+wrt_mask.f90: ncgrid.h bathy.h gridparam.h griddefs.h
+

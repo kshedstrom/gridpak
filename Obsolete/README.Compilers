@@ -1,0 +1,21 @@
+Sun:
+
+The grid program uses complex arithmetic and is quite a challenge
+for some compilers.  I have been having trouble with the current
+version of the Sun Solaris f77 - the grid program reports a "tracking
+error" for perfectly good inputs.  I have been building grids under
+SunOS instead, but have also built a grid on Solaris using Sun's
+f90.  Gnu Fortran (g77) also works.
+
+Dec:
+
+One user reported that she needed to "limit stacksize 32m" before
+running bathtub.  Otherwise, she got "signal Segmentation fault" when
+running the very first executable line.
+
+Gnu:
+
+Note that with g77, you need to build the netCDF libraries with g77 in
+order to link with them.  Be sure to use the -Df2cFortran option in
+CFLAGS when compiling the netCDF library.  If you #define PLOTS, you
+also need to build the NCAR graphics libraries with g77.
