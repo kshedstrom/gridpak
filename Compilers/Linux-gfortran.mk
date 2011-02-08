@@ -41,12 +41,12 @@
 #    NETCDF_INCDIR ?= /usr/local/include
 #    NETCDF_LIBDIR ?= /usr/local/lib
        HDF5_LIBDIR ?= /u1/uaf/kate/lib
-     NETCDF_INCDIR := /archive/u1/uaf/kate/netcdf/include
-     NETCDF_LIBDIR := /archive/u1/uaf/kate/netcdf/lib
+     NETCDF_INCDIR := /u1/uaf/kate/include
+     NETCDF_LIBDIR := /u1/uaf/kate/lib
       USE_NETCDF4 := on
 
          CPPFLAGS += -I$(NETCDF_INCDIR)
-             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
+             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf -lnetcdff -lcurl
 ifdef USE_NETCDF4
              LIBS += -L$(HDF5_LIBDIR) -lhdf5_hl -lhdf5 -lz
 endif

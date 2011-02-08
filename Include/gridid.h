@@ -3,4 +3,4 @@
 !  gridfile is the name of the netCDF file produced by the
 !        grid/sqgrid programs
       gridid = 'Chukchi and Beaufort Seas #1'
-      gridfile = 'grid_CnB.nc'
+      gridfile = 'grid_Chukchi.nc'

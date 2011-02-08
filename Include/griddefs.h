@@ -1,7 +1,8 @@
 ! define as 1 for ETOPO5 bathymetry
 #undef ETOPO5
 ! define as 1 for ETOPO2 bathymetry
-#define ETOPO2 1
+! #define ETOPO2 1
+#define IBCAO   1
 #undef GEBCO 
 
 ! for 64-bit output
@@ -16,7 +17,7 @@
 ! for averaging bathymetry in gridbox (for EW/NS grids only)
 #undef IMG_AVG
 
-#define KEEP_SHALLOW   1
+! #define KEEP_SHALLOW   1
 
 ! for NCAR graphics (3.2 or better) */
 #define PLOTS	     1
