@@ -1,7 +1,7 @@
 #include "griddefs.h"
 #include "bathy.h"
       integer         ITMAX, IBIG
-      parameter (     ITMAX=8, IBIG=400    )
+      parameter (     ITMAX=20, IBIG=4000    )
 !  ITMAX is the number of iterations to perform
 !  IBIG is the largest number of points to be read in for one
 !  boundary.
@@ -9,7 +9,7 @@
 !  original distribution of x,y points is preserved on boundary kb1
 !  and kb2:
       integer         kb1, kb2
-      parameter (     kb1 = 1, kb2 = 4   )
+      parameter (     kb1 = 1, kb2 = 2   )
 
       integer         L2, M2, L2big, M2big, nwrk
       integer         N, N1, N2, N3, N4
@@ -44,7 +44,7 @@
      &                even1, even2, even3, even4
       parameter   (  rbnd1=.true., rbnd2=.true., &
      &               rbnd3=.true., rbnd4=.true., &
-     &               even1=.false., even2=.true., &
+     &               even1=.true., even2=.true., &
      &               even3=.true., even4=.true.  )
 
 !  The following are used when you need to fit a boundary with
