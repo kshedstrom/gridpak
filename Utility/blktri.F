@@ -219,85 +219,86 @@
 !                        j. numer. anal.,11(1974) pp. 1136-1150.
 !***********************************************************************
 #include "griddefs.h"
-      integer         iflg       ,np         ,n          ,mp         , &
+      integer         iflg       ,np         ,n          ,mp         ,  &
      &                m          ,idimy      ,ierror
-      BIGREAL         an(*)      ,bn(*)      ,cn(*)      ,am(*)      , &
+      BIGREAL         an(*)      ,bn(*)      ,cn(*)      ,am(*)      ,  &
      &                bm(*)      ,cm(*)      ,y(idimy,1) ,w(*)
       external        prod       ,prodp      ,cprod      ,cprodp
-      integer         npp        ,k          ,nm         ,ncmplx     , &
+      integer         npp        ,k          ,nm         ,ncmplx     ,  &
      &                ik
       BIGREAL         eps        ,cnv
-      common /cblkt/  npp        ,k          ,eps        ,cnv        , &
+      common /cblkt/  npp        ,k          ,eps        ,cnv        ,  &
      &                nm         ,ncmplx     ,ik
 
 !  local variables
-      integer         nh         ,nl         ,iwah       ,iw1        , &
-     &                iwbh       ,iw2        ,iw3        ,iwd        , &
+      integer         nh         ,nl         ,iwah       ,iw1        ,  &
+     &                iwbh       ,iw2        ,iw3        ,iwd        ,  &
      &                iww        ,iwu
 !
 ! test m and n for the proper form
 !
       nm = n
       ierror = 0
-      if (m-5) 101,102,102
-  101 ierror = 1
-      go to 119
-  102 if (nm-3) 103,104,104
-  103 ierror = 2
-      go to 119
-  104 if (idimy-m) 105,106,106
-  105 ierror = 3
-      go to 119
-  106 nh = n
+      if (m < 5) then
+        ierror = 1; return
+      endif
+      if (nm < 3) then
+        ierror = 2; return
+      endif
+      if (idimy < m) then
+        ierror = 3; return
+      endif
+      nh = n
       npp = np
-      if (npp) 107,108,107
-  107 nh = nh+1
-  108 ik = 2
+      if (npp==0) nh = nh+1
+      ik = 2
       k = 1
   109 ik = ik+ik
       k = k+1
-      if (nh-ik) 110,110,109
-  110 nl = ik
+      if (nh > ik) goto 109
+      nl = ik
       ik = ik+ik
       nl = nl-1
       iwah = (k-2)*ik+k+6
-      if (npp) 111,112,111
+      if (npp==0) then
 !
 !     divide w into working sub arrays
 !
-  111 iw1 = iwah
-      iwbh = iw1+nm
-      w(1) = float(iw1-1+max0(2*nm,6*m))
-      go to 113
-  112 iwbh = iwah+nm+nm
-      iw1 = iwbh
-      w(1) = float(iw1-1+max0(2*nm,6*m))
-      nm = nm-1
+        iwbh = iwah+nm+nm
+        iw1 = iwbh
+        w(1) = float(iw1-1+max0(2*nm,6*m))
+        nm = nm-1
+      else
+        iw1 = iwah
+        iwbh = iw1+nm
+        w(1) = float(iw1-1+max0(2*nm,6*m))
+      endif
 !
 ! subroutine comp b computes the roots of the b polynomials
 !
-  113 if (ierror) 119,114,119
-  114 iw2 = iw1+m
+      if (ierror /= 0) return
+      iw2 = iw1+m
       iw3 = iw2+m
       iwd = iw3+m
       iww = iwd+m
       iwu = iww+m
-      if (iflg) 116,115,116
-  115 call compb (nl,ierror,an,bn,cn,w(2),w(iwah),w(iwbh))
-      go to 119
-  116 if (mp) 117,118,117
+      if (iflg==0) then
+        call compb (nl,ierror,an,bn,cn,w(2),w(iwah),w(iwbh))
+        return
+      endif
+      if (mp==0) then
 !
 ! subroutine blktr1 solves the linear system
 !
-  117 call blktr1 (nl,an,bn,cn,m,am,bm,cm,idimy,y,w(2),w(iw1),w(iw2), &
-     &             w(iw3),w(iwd),w(iww),w(iwu),prod,cprod)
-      go to 119
-  118 call blktr1 (nl,an,bn,cn,m,am,bm,cm,idimy,y,w(2),w(iw1),w(iw2), &
+        call blktr1 (nl,an,bn,cn,m,am,bm,cm,idimy,y,w(2),w(iw1),w(iw2), &
      &             w(iw3),w(iwd),w(iww),w(iwu),prodp,cprodp)
-  119 continue
+      else
+        call blktr1 (nl,an,bn,cn,m,am,bm,cm,idimy,y,w(2),w(iw1),w(iw2), &
+     &             w(iw3),w(iwd),w(iww),w(iwu),prod,cprod)
+      endif
       return
       end
-      subroutine blktr1 (n,an,bn,cn,m,am,bm,cm,idimy,y,b,w1,w2,w3,wd, &
+      subroutine blktr1 (n,an,bn,cn,m,am,bm,cm,idimy,y,b,w1,w2,w3,wd,   &
      &                   ww,wu,prdct,cprdct)
 !
 ! blktr1 solves the linear system
@@ -312,24 +313,24 @@
 !
 !
       integer         n          ,m          ,idimy
-      BIGREAL         an(*)      ,bn(*)      ,cn(*)      ,am(*)      , &
-     &                bm(*)      ,cm(*)      ,b(*)       ,w1(*)      , &
-     &                w2(*)      ,w3(*)      ,wd(*)      ,ww(*)      , &
+      BIGREAL         an(*)      ,bn(*)      ,cn(*)      ,am(*)      ,  &
+     &                bm(*)      ,cm(*)      ,b(*)       ,w1(*)      ,  &
+     &                w2(*)      ,w3(*)      ,wd(*)      ,ww(*)      ,  &
      &                wu(*)      ,y(idimy,n)
-      integer         npp        ,k          ,nm         ,ncmplx     , &
+      integer         npp        ,k          ,nm         ,ncmplx     ,  &
      &                ik
       BIGREAL         eps        ,cnv
-      common /cblkt/  npp        ,k          ,eps        ,cnv        , &
+      common /cblkt/  npp        ,k          ,eps        ,cnv        ,  &
      &                nm         ,ncmplx     ,ik
-      integer         kdo        ,l          ,i2         ,ir         , &
-     &                im2        ,nm2        ,i1         ,irm1       , &
-     &                im3        ,nm3        ,i3         ,im1        , &
-     &                nm1        ,if         ,i          ,i4         , &
-     &                idxa       ,idxc       ,nc         ,na         , &
-     &                ipi1       ,ipi2       ,ipi3       ,ip1        , &
-     &                ip2        ,ip3        ,np1        ,np2        , &
-     &                np3        ,j          ,iz         ,nz         , &
-     &                izr        ,ll         ,ifd        ,ip         , &
+      integer         kdo        ,l          ,i2         ,ir         ,  &
+     &                im2        ,nm2        ,i1         ,irm1       ,  &
+     &                im3        ,nm3        ,i3         ,im1        ,  &
+     &                nm1        ,if         ,i          ,i4         ,  &
+     &                idxa       ,idxc       ,nc         ,na         ,  &
+     &                ipi1       ,ipi2       ,ipi3       ,ip1        ,  &
+     &                ip2        ,ip3        ,np1        ,np2        ,  &
+     &                np3        ,j          ,iz         ,nz         ,  &
+     &                izr        ,ll         ,ifd        ,ip         ,  &
      &                np         ,imi1       ,imi2
       BIGREAL         dum
       external        prdct      ,cprdct
@@ -351,32 +352,35 @@
      &               m,am,bm,cm,wd,ww,wu)
          if = 2**k
          do 108 i=i4,if,i4
-            if (i-nm) 101,101,108
-  101       ipi1 = i+i1
+            if (i <= nm) then
+            ipi1 = i+i1
             ipi2 = i+i2
             ipi3 = i+i3
             call indxc (i,ir,idxc,nc)
-            if (i-if) 102,108,108
-  102       call indxa (i,ir,idxa,na)
+            if (i < if) then
+            call indxa (i,ir,idxa,na)
             call indxb (i-i1,irm1,im1,nm1)
             call indxb (ipi2,ir,ip2,np2)
             call indxb (ipi1,irm1,ip1,np1)
             call indxb (ipi3,irm1,ip3,np3)
-            call prdct (nm1,b(im1),0,dum,0,dum,na,an(idxa),w3,w1,m,am, &
+            call prdct (nm1,b(im1),0,dum,0,dum,na,an(idxa),w3,w1,m,am,  &
      &                  bm,cm,wd,ww,wu)
-            if (ipi2-nm) 105,105,103
-  103       do 104 j=1,m
-               w3(j) = 0.
-               w2(j) = 0.
-  104       continue
-            go to 106
-  105       call prdct (np2,b(ip2),np1,b(ip1),np3,b(ip3),0,dum, &
+            if (ipi2 <= nm) then
+              call prdct (np2,b(ip2),np1,b(ip1),np3,b(ip3),0,dum,       &
      &                  y(1,ipi2),w3,m,am,bm,cm,wd,ww,wu)
-            call prdct (np1,b(ip1),0,dum,0,dum,nc,cn(idxc),w3,w2,m,am, &
+              call prdct (np1,b(ip1),0,dum,0,dum,nc,cn(idxc),w3,w2,m,am,&
      &                  bm,cm,wd,ww,wu)
-  106       do 107 j=1,m
+            else
+              do j=1,m
+                w3(j) = 0.
+                w2(j) = 0.
+              end do
+            endif
+            do j=1,m
                y(j,i) = w1(j)+w2(j)+y(j,i)
-  107       continue
+            end do
+           end if
+           end if
   108    continue
   109 continue
       if (npp) 132,110,132

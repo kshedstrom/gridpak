@@ -18,7 +18,8 @@
 # First the defaults
 #
                FC := gfortran
-           FFLAGS := -frepack-arrays
+#           FFLAGS := -frepack-arrays
+           FFLAGS := -frepack-arrays -fno-second-underscore
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional
             CLEAN := Bin/cpp_clean
@@ -40,16 +41,16 @@
 
 #    NETCDF_INCDIR ?= /usr/local/include
 #    NETCDF_LIBDIR ?= /usr/local/lib
-       HDF5_LIBDIR ?= /u1/uaf/kate/lib
-     NETCDF_INCDIR := /archive/u1/uaf/kate/netcdf/include
-     NETCDF_LIBDIR := /archive/u1/uaf/kate/netcdf/lib
+#        NC_CONFIG ?= /usr/local/pkg/netcdf/netcdf-4.1.gnu/bin/nc-config
+        NC_CONFIG ?= nc-config
+    NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
+             LIBS := $(shell $(NC_CONFIG) --flibs)
+#             LIBS := $(shell $(NC_CONFIG) --flibs) -lgfortran
+
       USE_NETCDF4 := on
 
          CPPFLAGS += -I$(NETCDF_INCDIR)
-             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
-ifdef USE_NETCDF4
-             LIBS += -L$(HDF5_LIBDIR) -lhdf5_hl -lhdf5 -lz
-endif
+#             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
 
 ifdef ARPACK
     ARPACK_LIBDIR ?= /usr/local/lib
