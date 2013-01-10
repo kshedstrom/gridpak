@@ -503,7 +503,7 @@
       integer         find_i
       BIGREAL         lon_rho
       integer         ILON
-      real            lon(ILON)
+      BIGREAL         lon(ILON)
       integer         mid, high, low
 
       low = 1
@@ -536,7 +536,7 @@
       integer         find_j
       BIGREAL         lat_rho
       integer         ILAT
-      real            lat(ILAT)
+      BIGREAL         lat(ILAT)
       integer         mid, high, low
 
       low = 1

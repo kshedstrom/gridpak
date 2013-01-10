@@ -671,7 +671,11 @@
   116 b(lh) = b(n2m2+1)
       call indxb (if,k-1,j1,j2)
       j2 = j1+nmp+nmp
-      call ppadd (nm+1,ierror,an,cn,b(j1),b(j1),b(j2))
+#if DBLEPREC
+      call ppadd (nm+1,ierror,an,cn,dcmplx(b(j1:j2)),b(j1),b(j2))
+#else
+      call ppadd (nm+1,ierror,an,cn,cmplx(b(j1:j2)),b(j1),b(j2))
+#endif  /* DBLEPREC */
   117 return
   118 ierror = 4
       return

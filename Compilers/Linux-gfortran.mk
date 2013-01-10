@@ -19,7 +19,7 @@
 #
                FC := gfortran
 #           FFLAGS := -frepack-arrays
-           FFLAGS := -frepack-arrays -fno-second-underscore
+           FFLAGS := -frepack-arrays -fno-second-underscore -C
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional
             CLEAN := Bin/cpp_clean
