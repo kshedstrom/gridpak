@@ -31,9 +31,11 @@
       call getenv('ETOPO2',fname)
 #elif GEBCO
       call getenv('GEBCO',fname)
+#elif IBCAO
+      call getenv('IBCAO',fname)
 #else
       call getenv('BATHY_FILE',fname)
-#endif  /* ETOPO5 */
+#endif
       rcode = nf90_open(fname,nf90_nowrite,ncinpid)
 !
 !-----------------------------------------------------------------------

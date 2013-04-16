@@ -1,8 +1,9 @@
 ! define as 1 for ETOPO5 bathymetry
-#define ETOPO5   1
+#undef ETOPO5   
 ! define as 1 for ETOPO2 bathymetry
 #undef ETOPO2
 #undef GEBCO
+#define IBCAO   1
 
 ! for 64-bit output
 #define DBLEPREC      1

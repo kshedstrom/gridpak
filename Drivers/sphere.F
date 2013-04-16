@@ -369,8 +369,8 @@
       call set (0.,1.,0.,1.,0.,1.,0.,1.,1)
       call plchhq(.5,.98,ltit,.012,0.,0.)
       if (colour) then
-        call plchhq(.85,.98,lnote(1:17),.012,0.,0.)
-        call plchhq(.85,.95,lnote2(1:17),.012,0.,0.)
+        call plchhq(.85,.98,trim(lnote),.012,0.,0.)
+        call plchhq(.85,.95,trim(lnote2),.012,0.,0.)
       endif
       call set (x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
       if (colour) then
@@ -407,8 +407,8 @@
       call set (0.,1.,0.,1.,0.,1.,0.,1.,1)
       call plchhq(.5,.98,ltit,.012,0.,0.)
       if (colour) then
-        call plchhq(.85,.98,lnote(1:17),.012,0.,0.)
-        call plchhq(.85,.95,lnote2(1:17),.012,0.,0.)
+        call plchhq(.85,.98,trim(lnote),.012,0.,0.)
+        call plchhq(.85,.95,trim(lnote2),.012,0.,0.)
       endif
       call set (x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
       if (colour) then
