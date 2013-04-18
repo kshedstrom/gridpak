@@ -1,5 +1,5 @@
 ! define as 1 for ETOPO5 bathymetry
-#undef ETOPO5   
+#undef ETOPO5
 ! define as 1 for ETOPO2 bathymetry
 #undef ETOPO2
 #undef GEBCO
@@ -12,12 +12,12 @@
 #define DRAW_COASTS   1
 
 ! to keep ellipsoidal terms in Earth's shape
-#undef ELLIPSOID
+#define ELLIPSOID    1
 
 ! for averaging bathymetry in gridbox
 #undef IMG_AVG
 
-#define KEEP_SHALLOW 1
+#undef KEEP_SHALLOW
 
 ! for NCAR graphics (3.2 or better) */
 #define PLOTS	     1
@@ -52,17 +52,3 @@
 #define FLoaT float
 #endif  /* DBLEPREC */
 #endif  /* cray */
-
-#if DBLEPREC
-#define nf_get_var_FLoaT   nf_get_var_double
-#define nf_get_vara_FLoaT   nf_get_vara_double
-#define nf_put_att_FLoaT   nf_put_att_double
-#define nf_put_var_FLoaT   nf_put_var_double
-#define nf_put_vara_FLoaT   nf_put_vara_double
-#else
-#define nf_get_var_FLoaT   nf_get_var_real
-#define nf_get_vara_FLoaT   nf_get_vara_real
-#define nf_put_att_FLoaT   nf_put_att_real
-#define nf_put_var_FLoaT   nf_put_var_real
-#define nf_put_vara_FLoaT   nf_put_vara_real
-#endif  /* DBLEPREC */

@@ -51,17 +51,3 @@
 #define FLoaT float
 #endif  /* DBLEPREC */
 #endif  /* cray */
-
-#if DBLEPREC
-#define nf_get_var_FLoaT   nf_get_var_double
-#define nf_get_vara_FLoaT   nf_get_vara_double
-#define nf_put_att_FLoaT   nf_put_att_double
-#define nf_put_var_FLoaT   nf_put_var_double
-#define nf_put_vara_FLoaT   nf_put_vara_double
-#else
-#define nf_get_var_FLoaT   nf_get_var_real
-#define nf_get_vara_FLoaT   nf_get_vara_real
-#define nf_put_att_FLoaT   nf_put_att_real
-#define nf_put_var_FLoaT   nf_put_var_real
-#define nf_put_vara_FLoaT   nf_put_vara_real
-#endif  /* DBLEPREC */

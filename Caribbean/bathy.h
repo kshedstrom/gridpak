@@ -1,6 +1,6 @@
 #include "gridparam.h"
-      integer         Lm, Mm, Lp, Mp, L2d
-      parameter (     Lm=L-1    , Mm=M-1   , Lp=L+1,  Mp=M+1  )
+      integer         L, M, Lp, Mp, L2d
+      parameter (     L=Lm+1, M=Mm+1, Lp=Lm+2,  Mp=Mm+2  )
       parameter (     L2d=Lp*Mp                               )
 !  lcflag tells which color bar to use, 1 - 3 (so far).  If negative
 !  then black outlines are drawn over the color contour regions.
