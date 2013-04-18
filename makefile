@@ -198,16 +198,16 @@ BATHTUB := $(BINDIR)/bathtub
 BATHSUDS := $(BINDIR)/bathsuds
 BATHSOAP := $(BINDIR)/bathsoap
 SPHERE := $(BINDIR)/sphere
-ifdef DEBUG
-   COAST := $(BINDIR)/coastG
-   GRID := $(BINDIR)/gridG
-   SQGRID := $(BINDIR)/sqgridG
-   TOLAT := $(BINDIR)/tolatG
-   BATHTUB := $(BINDIR)/bathtubG
-   BATHSUDS := $(BINDIR)/bathsudsG
-   BATHSOAP := $(BINDIR)/bathsoapG
-   SPHERE := $(BINDIR)/sphereG
-endif
+#ifdef DEBUG
+#   COAST := $(BINDIR)/coastG
+#   GRID := $(BINDIR)/gridG
+#   SQGRID := $(BINDIR)/sqgridG
+#   TOLAT := $(BINDIR)/tolatG
+#   BATHTUB := $(BINDIR)/bathtubG
+#   BATHSUDS := $(BINDIR)/bathsudsG
+#   BATHSOAP := $(BINDIR)/bathsoapG
+#   SPHERE := $(BINDIR)/sphereG
+#endif
 
 #--------------------------------------------------------------------------
 #  Set name of module files for netCDF F90 interface. On some platforms

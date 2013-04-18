@@ -70,9 +70,10 @@
       integer   NSUB, LONSUB, LATSUB
       parameter(NSUB = ILON/250+ILAT/250)
       parameter(LONSUB=(ILON-1)/NSUB, LATSUB=(ILAT-1)/NSUB )
-      real            tmp(LONSUB,LATSUB), htmp(0:L,0:M)
+      real            tmp(LONSUB,LATSUB)
+      BIGREAL         htmp(0:L,0:M)
       character*24    lbl
-      real            alatn, alats, alonw, alone
+      BIGREAL         alatn, alats, alonw, alone
       BIGREAL         depthmxr, depthmnr,                               &
      &                htmp1, htmp2, x1, y1
       BIGREAL         vmin, vmax
@@ -167,6 +168,7 @@
       print *,'latitude range of data ',alats,alatn
       print *,'longitute range of grid ',minlon,maxlon
       print *,'longitute range of data ',alonw,alone
+#ifndef IBCAO
       if (minlat .lt. alats .or. maxlat .gt. alatn) then
         print *,'Insufficient latitude range of data'
         print *,'try again ... '
@@ -185,6 +187,7 @@
         call exit(1)
 #endif  /* NO_EXIT */
       end if
+#endif  /* !IBCAO */
 
 !  h at lat_rho, lon_rho, before h is clipped
 
@@ -230,6 +233,10 @@
           do j=0,M
             i1 = int((lon_rho(i,j) - alonw)/DELTA_X) + 1
             j1 = int((lat_rho(i,j) - alats)/DELTA_Y) + 1
+#ifdef IBCAO
+            h(i,j) = 0.0
+            if (j1 < 1) cycle
+#endif
             x1 = lon_rho(i,j) - (alonw + (i1-1.)*DELTA_X)
             y1 = lat_rho(i,j) - (alats + (j1-1.)*DELTA_Y)
             corner(1,1) = bathy(i1,j1)
@@ -343,6 +350,10 @@
           do j=0,M
             i1 = int((lon_rho(i,j) - alonw)/DELTA_X) + 1
             j1 = int((lat_rho(i,j) - alats)/DELTA_Y) + 1
+#ifdef IBCAO
+            h(i,j) = 0.0
+            if (j1 < 1) cycle
+#endif
             x1 = lon_rho(i,j) - (alonw + (i1-1.)*DELTA_X)
             y1 = lat_rho(i,j) - (alats + (j1-1.)*DELTA_Y)
             corner(1,1) = bathy(i1,j1)
@@ -428,7 +439,6 @@
 #else
       call exit(0)
 #endif  /* NO_EXIT */
-  220 call crash('bathtub: read error', 0)
       end
 
 ! ******************************************************************
