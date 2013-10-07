@@ -204,19 +204,24 @@
       write (ltit,130)
   130 format ('Bottom Slope')
 
-      do 140  j=0,M
-      do 140  i=1,L
-        dhdxx(i,j) = (h(i,j) - h(i-1,j))*av2(pm(i,j),pm(i-1,j))
-  140 continue
-      do 150  j=1,M
-      do 150  i=0,L
-        dhdyy(i,j) = (h(i,j) - h(i,j-1))*av2(pn(i,j),pn(i,j-1))
-  150 continue
-      do 160  j=1,M
-      do 160  i=1,L
-        tmp(i,j) = sqrt((0.5*(dhdxx(i,j)+dhdxx(i,j-1)))**2 + &
+      do j=0,M
+        do i=1,L
+          dhdxx(i,j) = (h(i,j) - h(i-1,j))*av2(pm(i,j),pm(i-1,j))       &
+     &         * mask_rho(i,j) * mask_rho(i-1,j)
+        end do
+      end do
+      do j=1,M
+        do i=0,L
+          dhdyy(i,j) = (h(i,j) - h(i,j-1))*av2(pn(i,j),pn(i,j-1))       &
+     &         * mask_rho(i,j) * mask_rho(i,j-1)
+        end do
+      end do
+      do j=1,M
+        do i=1,L
+          tmp(i,j) = sqrt((0.5*(dhdxx(i,j)+dhdxx(i,j-1)))**2 +          &
      &        (0.5*(dhdyy(i,j)+dhdyy(i-1,j)))**2)
-  160 continue
+        end do
+      end do
 
       slpmax = vsmax(tmp,L*M)
       write (lnote,170) slpmax

@@ -40,6 +40,11 @@
       parameter     ( ILON=360*30+1, ILAT=180*30+1 )
       parameter     ( DELTA_X=1/30.d0, DELTA_Y=1/30.d0 )
       integer*2       bathy2(ILON-1,ILAT)
+#elif IBCAO
+      parameter     ( evenflag = .true. )
+      parameter     ( ILON=360*60+1, ILAT=36*60+1 )
+      parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
+!      integer*2       bathy2(ILON-1,ILAT)
 #elif GEBCO
       parameter     ( evenflag = .true. )
       parameter     ( ILON=360*60+1, ILAT=180*60+1 )
@@ -56,7 +61,7 @@
 !      parameter     ( evenflag = .false. )
 !      parameter     ( ILON=1771, ILAT=1978)
 
-#endif  /* DAMEE */
+#endif
       integer*2       bathy(ILON,ILAT)
       BIGREAL         lat(ILAT), lon(ILON)
       common /ll/     lat, lon

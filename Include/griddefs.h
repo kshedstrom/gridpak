@@ -1,8 +1,9 @@
 ! define as 1 for ETOPO5 bathymetry
 #undef ETOPO5
 ! define as 1 for ETOPO2 bathymetry
-#undef ETOPO2 
-#define GEBCO 1
+#undef ETOPO2
+#undef GEBCO
+#define IBCAO 1
 
 ! for 64-bit output
 #define DBLEPREC      1
@@ -24,8 +25,8 @@
 #undef X_WIN
 
 #undef SYS_POTS       /* unimplimented system calls */
-#undef XPOTS1	      /* read ipot1 file */
-#define XPOTS2	 1     /* read ipot2 file */
+#define XPOTS1	 1     /* read ipot1 file */
+#undef XPOTS2	      /* read ipot2 file */
 #undef XPOTS3	      /* read ipot3 file */
 #undef XPOTS4	      /* read ipot4 file */
 
