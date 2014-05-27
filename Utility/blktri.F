@@ -951,6 +951,7 @@
       common /cblkt/  npp        ,k          ,eps        ,cnv        , &
      &                nm         ,ncmplx     ,ik
       integer         izh        ,ipl        ,id
+      idx = MAX(i,1)
       idp = 0
       if (ir) 107,101,103
   101 if (i-nm) 102,102,107
