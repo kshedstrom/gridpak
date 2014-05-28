@@ -67,7 +67,7 @@
 !  to be used in generating a nested domain.
       logical        subset
       integer        Lwest, Least, Msouth, Mnorth, iout3
-      parameter    ( subset = .false., Lwest = 144, Least = 272, &
+      parameter    ( subset = .false., Lwest = 14, Least = 27, &
      &               Msouth = 160, Mnorth = 248, iout3 = 15    )
 
 !  xpots unit numbers
