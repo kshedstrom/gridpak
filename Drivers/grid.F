@@ -13,7 +13,7 @@
 !     paper no. 87-2057, AIAA/SAE/ASME/ASEE 23rd Joint Propulsion
 !     Conference, San Diego, California, June 1987.
 !
-!     It now uses mud2 version 3.0 or sepeli.
+!     It now uses sepeli only.
 !
 !     This version uses double precision complex arithmetic.  If your
 !     compiler does not support double precision complex, undefine
@@ -913,7 +913,7 @@
 
       complex*16 z(N), z0, zd
       integer    BIG
-      parameter (BIG=3000)
+      parameter (BIG=8000)
       double precision r(BIG), t(BIG), pi, alpha, pwr, pmin, &
      &           pmax, tp
       integer    i, j, k, im, ip

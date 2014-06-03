@@ -40,6 +40,11 @@
       parameter     ( ILON=360*30+1, ILAT=180*30+1 )
       parameter     ( DELTA_X=1/30.d0, DELTA_Y=1/30.d0 )
       integer*2       bathy2(ILON-1,ILAT)
+#elif ETOPO1
+      parameter     ( evenflag = .true. )
+      parameter     ( ILON=360*60+1, ILAT=180*60+1 )
+      parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
+!      integer*2       bathy2(ILON-1,ILAT)
 #elif IBCAO
       parameter     ( evenflag = .true. )
       parameter     ( ILON=43201, ILAT=3121 )
@@ -49,15 +54,16 @@
       parameter     ( ILON=360*60+1, ILAT=180*60+1 )
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
 #else
-      parameter     ( evenflag = .true. )
+!      parameter     ( evenflag = .true. )
 ! Seth's AK bathy
-      parameter     ( ILON=6601, ILAT=3601)
-      parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/120.d0)
+!      parameter     ( ILON=6601, ILAT=3601)
+!      parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/120.d0)
 !     parameter     ( ILON=2601, ILAT=1401, DELTA=1/30.d0)
 ! Hank's CGOA
 !     parameter     ( ILON=1861, ILAT=1093, DELTA=1/60.d0)
 !  Smith and Sandwell
-!      parameter     ( evenflag = .false. )
+      parameter     ( evenflag = .false. )
+      parameter     ( ILON=721, ILAT=918)
 !      parameter     ( ILON=1771, ILAT=1978)
 
 #endif
@@ -70,8 +76,7 @@
       integer   NSUB, LONSUB, LATSUB
       parameter(NSUB = ILON/250+ILAT/250)
       parameter(LONSUB=(ILON-1)/NSUB, LATSUB=(ILAT-1)/NSUB )
-      real            tmp(LONSUB,LATSUB)
-      BIGREAL         htmp(0:L,0:M)
+      real            tmp(LONSUB,LATSUB), htmp(0:L,0:M)
       character*24    lbl
       BIGREAL         alatn, alats, alonw, alone
       BIGREAL         depthmxr, depthmnr,                               &
@@ -103,10 +108,12 @@
       call extract(lon,lat,bathy2,ILON-1,ILAT)
 
 !  Longitudes between 0 and 360
-      lon(ILON) = 180.
+      lon(ILON) = lon(1)+360.
+# if ETOPO5
       do i=1,ILON
         if (lon(i) .lt. 0.) lon(i) = lon(i) + 360.
       enddo
+# endif
 
 !  Copy value at one end of the Earth to other end
       do i=1,ILON-1
@@ -150,6 +157,7 @@
       maxlat = vmax(lat_rho,Lp*Mp)
       maxlon = vmax(lon_rho,Lp*Mp)
 
+#ifndef ETOPO1
 #if ETOPO5
       if (minlon .lt. 0.) then
 #endif /* ETOPO5 */
@@ -163,6 +171,7 @@
 #if ETOPO5
       endif
 #endif /* ETOPO5 */
+#endif /* ETOPO1 */
 
       print *,'latitude range of grid ',minlat,maxlat
       print *,'latitude range of data ',alats,alatn

@@ -2,5 +2,5 @@
 !        used as a plot label.
 !  gridfile is the name of the netCDF file produced by the
 !        grid/sqgrid programs
-      gridid = 'Iceland'
-      gridfile = 'island_2.nc'
+      gridid = 'Gulf of Mexico #1'
+      gridfile = 'grid_gom.nc'

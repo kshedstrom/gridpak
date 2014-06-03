@@ -1,7 +1,7 @@
 #include "griddefs.h"
 #include "bathy.h"
       integer         ITMAX, IBIG
-      parameter (     ITMAX=8, IBIG=4000    )
+      parameter (     ITMAX=8, IBIG=400    )
 !  ITMAX is the number of iterations to perform
 !  IBIG is the largest number of points to be read in for one
 !  boundary.
@@ -9,7 +9,7 @@
 !  original distribution of x,y points is preserved on boundary kb1
 !  and kb2:
       integer         kb1, kb2
-      parameter (     kb1 = 3, kb2 = 2   )
+      parameter (     kb1 = 1, kb2 = 4   )
 
       integer         L2, M2, L2big, M2big, nwrk
       integer         N, N1, N2, N3, N4
@@ -44,7 +44,7 @@
      &                even1, even2, even3, even4
       parameter   (  rbnd1=.true., rbnd2=.true., &
      &               rbnd3=.true., rbnd4=.true., &
-     &               even1=.true., even2=.true., &
+     &               even1=.false., even2=.true., &
      &               even3=.true., even4=.true.  )
 
 !  The following are used when you need to fit a boundary with
@@ -60,15 +60,15 @@
       integer         Lmiddle, Mmiddle, iout1, iout2
       parameter   (   pleft1=.false., pleft2=.false., &
      &                pbot1=.false., pbot2=.false., &
-     &                Lmiddle=11, Mmiddle=15, &
+     &                Lmiddle=49, Mmiddle=25, &
      &                iout1=13, iout2=14             )
 
 !  These variables are used for writing out a subset of the psi points
 !  to be used in generating a nested domain.
       logical        subset
       integer        Lwest, Least, Msouth, Mnorth, iout3
-      parameter    ( subset = .false., Lwest = 14, Least = 17, &
-     &               Msouth = 6, Mnorth = 14, iout3 = 15    )
+      parameter    ( subset = .false., Lwest = 144, Least = 272, &
+     &               Msouth = 160, Mnorth = 248, iout3 = 15    )
 
 !  xpots unit numbers
       integer         ipot1, ipot2, ipot3, ipot4

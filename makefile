@@ -24,7 +24,7 @@
 #::::::::::::::::::::::::::::::::::::::::::::::::::::: Hernan G. Arango :::
 
 
-NEED_VERSION := 3.80 3.81
+NEED_VERSION := 3.80 3.81 3.82
 $(if $(filter $(MAKE_VERSION),$(NEED_VERSION)),,        \
  $(error This makefile requires one of GNU make version $(NEED_VERSION).))
 
@@ -43,7 +43,7 @@ $(if $(filter $(MAKE_VERSION),$(NEED_VERSION)),,        \
 #
 #  Activate debugging compiler options:
 
-       DEBUG :=
+       DEBUG := on
 
 #  If parallel applications, use at most one of these definitions
 #  (leave both definitions blank in serial applications):

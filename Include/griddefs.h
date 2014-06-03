@@ -1,9 +1,8 @@
 ! define as 1 for ETOPO5 bathymetry
-#undef ETOPO5
+#define ETOPO5   1
 ! define as 1 for ETOPO2 bathymetry
 #undef ETOPO2
 #undef GEBCO
-#define IBCAO   1
 
 ! for 64-bit output
 #define DBLEPREC      1
@@ -12,9 +11,9 @@
 #define DRAW_COASTS   1
 
 ! to keep ellipsoidal terms in Earth's shape
-#define ELLIPSOID    1
+#define ELLIPSOID     1
 
-! for averaging bathymetry in gridbox
+! for averaging bathymetry in gridbox (for EW/NS grids only)
 #undef IMG_AVG
 
 #undef KEEP_SHALLOW
