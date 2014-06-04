@@ -1,7 +1,8 @@
 ! define as 1 for ETOPO5 bathymetry
-#define ETOPO5   1
+#undef ETOPO5
 ! define as 1 for ETOPO2 bathymetry
 #undef ETOPO2
+! define as 1 for ETOPO1 bathymetry
 #define ETOPO1  1
 #undef GEBCO
 #undef IBCAO

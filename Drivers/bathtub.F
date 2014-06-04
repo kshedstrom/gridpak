@@ -128,9 +128,11 @@
       call extract(lon,lat,bathy,ILON,ILAT)
 
 !  Longitudes between 0 and 360
+# ifndef ETOPO1
       do i=1,ILON
         if (lon(i) .lt. 0.) lon(i) = lon(i) + 360.
       enddo
+# endif
 #endif   /* ETOPO5 || ETOPO2 */
 
 !  Our convention has been negative for land elevations
