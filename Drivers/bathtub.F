@@ -53,18 +53,14 @@
       parameter     ( evenflag = .true. )
       parameter     ( ILON=360*60+1, ILAT=180*60+1 )
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
+#elif ARDEM
+      parameter     ( evenflag = .true. )
+      parameter     ( ILON=6601, ILAT=3601)
+      parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/120.d0)
 #else
-!      parameter     ( evenflag = .true. )
-! Seth's AK bathy
-!      parameter     ( ILON=6601, ILAT=3601)
-!      parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/120.d0)
-!     parameter     ( ILON=2601, ILAT=1401, DELTA=1/30.d0)
-! Hank's CGOA
-!     parameter     ( ILON=1861, ILAT=1093, DELTA=1/60.d0)
-!  Smith and Sandwell
+!  Smith and Sandwell subset
       parameter     ( evenflag = .false. )
       parameter     ( ILON=721, ILAT=918)
-!      parameter     ( ILON=1771, ILAT=1978)
 
 #endif
       integer*2       bathy(ILON,ILAT)
