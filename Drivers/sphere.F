@@ -412,7 +412,7 @@
       endif
       call set (x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
       if (colour) then
-        call cpsfill (tmp2,L,L,M,8,lcflag,tallflg,.false.)
+        call cpsfill(tmp2,L,L,M,8,lcflag,tallflg,.false.)
         if (grover) call grdplt(x1,x2,y1,y2,gridid)
 #if DRAW_COASTS
         call drawcoast

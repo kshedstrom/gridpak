@@ -35,6 +35,8 @@
       call getenv('GEBCO',fname)
 #elif IBCAO
       call getenv('IBCAO',fname)
+#elif ARDEM
+      call getenv('ARDEM',fname)
 #else
       call getenv('BATHY_FILE',fname)
 #endif

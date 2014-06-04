@@ -1,8 +1,12 @@
-! define as 1 for ETOPO5 bathymetry
+! define one of these as 1 for reading the respective bathymetry.
+! Otherwise, it defaults to using the BATHY_FILE environment variable,
+! here with the dimensions of the Smith and Sandwell subset for USwest.
 #undef ETOPO5
-! define as 1 for ETOPO2 bathymetry
 #undef ETOPO2
+#undef ETOPO1
 #undef GEBCO
+#undef IBCAO
+#undef ARDEM
 
 ! for 64-bit output
 #define DBLEPREC      1
