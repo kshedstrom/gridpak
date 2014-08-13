@@ -34,17 +34,18 @@
       parameter     ( evenflag = .true. )
       parameter     ( ILON=360*12+1, ILAT=180*12+1 )
       parameter     ( DELTA_X=1/12.d0, DELTA_Y=1/12.d0 )
-      integer*2       bathy2(ILON-1,ILAT)
 #elif ETOPO2
       parameter     ( evenflag = .true. )
       parameter     ( ILON=360*30+1, ILAT=180*30+1 )
       parameter     ( DELTA_X=1/30.d0, DELTA_Y=1/30.d0 )
-      integer*2       bathy2(ILON-1,ILAT)
 #elif ETOPO1
       parameter     ( evenflag = .true. )
       parameter     ( ILON=360*60+1, ILAT=180*60+1 )
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
-!      integer*2       bathy2(ILON-1,ILAT)
+#elif SRTM30
+      parameter     ( evenflag = .true. )
+      parameter     ( ILON=360*120+1, ILAT=180*120 )
+      parameter     ( DELTA_X=1/120.d0, DELTA_Y=1/120.d0 )
 #elif IBCAO
       parameter     ( evenflag = .true. )
       parameter     ( ILON=43201, ILAT=3121 )
@@ -63,7 +64,10 @@
       parameter     ( ILON=721, ILAT=918)
 
 #endif
-      integer*2       bathy(ILON,ILAT)
+      integer*2, allocatable ::       bathy(:,:)
+#if ETOPO5 || ETOPO2 || SRTM30
+      integer*2, allocatable ::       bathy2(:,:)
+#endif
       BIGREAL         lat(ILAT), lon(ILON)
       common /ll/     lat, lon
       BIGREAL         corner(2,2), dx, dy
@@ -91,6 +95,10 @@
 
 #include "gridid.h"
 
+      allocate(bathy(ILON,ILAT))
+#if ETOPO5 || ETOPO2 || SRTM30
+      allocate(bathy2(ILON-1,ILAT))
+#endif
 !  depths less than depthmin will be set to depthmin
       print *, 'minimum depth (negative is land elevation)'
       read(5,*) depthmin
@@ -100,7 +108,7 @@
       print *, 'apply mask? (T/F)'
       read(5,*) mask_flag
 
-#if ETOPO5 || ETOPO2
+#if ETOPO5 || ETOPO2 || SRTM30
       call extract(lon,lat,bathy2,ILON-1,ILAT)
 
 !  Longitudes between 0 and 360

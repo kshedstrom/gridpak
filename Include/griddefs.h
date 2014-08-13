@@ -3,7 +3,8 @@
 ! here with the dimensions of the Smith and Sandwell subset for USwest.
 #undef ETOPO5
 #undef ETOPO2
-#define ETOPO1 1
+#undef ETOPO1
+#define SRTM30  1
 #undef GEBCO
 #undef IBCAO
 #undef ARDEM

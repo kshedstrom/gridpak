@@ -4,6 +4,7 @@
 #define ETOPO5   1
 #undef ETOPO2
 #undef ETOPO1
+#undef SRTM30
 #undef GEBCO
 #undef IBCAO
 #undef ARDEM

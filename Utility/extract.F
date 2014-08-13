@@ -31,6 +31,8 @@
       call getenv('ETOPO2',fname)
 #elif ETOPO1
       call getenv('ETOPO1',fname)
+#elif SRTM30
+      call getenv('SRTM30',fname)
 #elif GEBCO
       call getenv('GEBCO',fname)
 #elif IBCAO
