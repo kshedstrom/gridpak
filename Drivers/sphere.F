@@ -123,7 +123,7 @@
       end if
 
 ! If on a sphere then compute spherical pm,pn factors
-      if (spherical .and. readlat) then
+      if (spherical == 1 .and. readlat) then
 
         do j = 1,Mm
           do i = 1,Lm
