@@ -24,10 +24,10 @@
 #::::::::::::::::::::::::::::::::::::::::::::::::::::: Hernan G. Arango :::
 
 
-NEED_VERSION := 3.80 3.81
-$(if $(filter $(MAKE_VERSION),$(NEED_VERSION)),,        \
- $(error This makefile requires one of GNU make version $(NEED_VERSION).))
-
+ifneq (3.80,$(firstword $(sort $(MAKE_VERSION) 3.80)))
+ $(error This makefile requires GNU make version 3.80 or higher. \
+  Your current version is: $(MAKE_VERSION))
+endif
 
 #--------------------------------------------------------------------------
 #  Initialize some things.
@@ -43,7 +43,7 @@ $(if $(filter $(MAKE_VERSION),$(NEED_VERSION)),,        \
 #
 #  Activate debugging compiler options:
 
-       DEBUG :=
+       DEBUG := on
 
 #  If parallel applications, use at most one of these definitions
 #  (leave both definitions blank in serial applications):
@@ -198,16 +198,16 @@ BATHTUB := $(BINDIR)/bathtub
 BATHSUDS := $(BINDIR)/bathsuds
 BATHSOAP := $(BINDIR)/bathsoap
 SPHERE := $(BINDIR)/sphere
-ifdef DEBUG
-   COAST := $(BINDIR)/coastG
-   GRID := $(BINDIR)/gridG
-   SQGRID := $(BINDIR)/sqgridG
-   TOLAT := $(BINDIR)/tolatG
-   BATHTUB := $(BINDIR)/bathtubG
-   BATHSUDS := $(BINDIR)/bathsudsG
-   BATHSOAP := $(BINDIR)/bathsoapG
-   SPHERE := $(BINDIR)/sphereG
-endif
+#ifdef DEBUG
+#   COAST := $(BINDIR)/coastG
+#   GRID := $(BINDIR)/gridG
+#   SQGRID := $(BINDIR)/sqgridG
+#   TOLAT := $(BINDIR)/tolatG
+#   BATHTUB := $(BINDIR)/bathtubG
+#   BATHSUDS := $(BINDIR)/bathsudsG
+#   BATHSOAP := $(BINDIR)/bathsoapG
+#   SPHERE := $(BINDIR)/sphereG
+#endif
 
 #--------------------------------------------------------------------------
 #  Set name of module files for netCDF F90 interface. On some platforms
