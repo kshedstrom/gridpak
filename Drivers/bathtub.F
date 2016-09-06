@@ -56,13 +56,11 @@
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
 #elif ARDEM
       parameter     ( evenflag = .true. )
-! Seth's AK bathy
       parameter     ( ILON=6601, ILAT=3601)
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/120.d0)
 #elif PALAU_BATHY
       parameter     ( evenflag = .false. )
       parameter     ( ILON=2850, ILAT=2409)
-!      parameter     ( DELTA_X=1/440.427d0, DELTA_Y=1/440.418d0)
 #else
 !  Smith and Sandwell subset
       parameter     ( evenflag = .false. )

@@ -182,9 +182,9 @@
         enddo
       enddo
       call set(0.,1.,0.,1.,0.,1.,0.,1.,1)
-      call plchhq(.50,.98,ltit(1:17),.012,0.,0.)
-      call plchhq(.85,.98,lnote(1:20),.012,0.,0.)
-      call plchhq(.85,.95,lnote2(1:20),.012,0.,0.)
+      call plchhq(.50,.98,trim(ltit),.012,0.,0.)
+      call plchhq(.85,.98,trim(lnote),.012,0.,0.)
+      call plchhq(.85,.95,trim(lnote2),.012,0.,0.)
       call set(x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
       if (colour) then
         call cpsfill(htmp,Lp,Lp,Mp,16,lcflag,tallflg,.true.)
@@ -228,8 +228,8 @@
   170 format ('MAX SLOPE =',f9.3)
 
       call set(0.,1.,0.,1.,0.,1.,0.,1.,1)
-      call plchhq (0.5,0.98,ltit(1:12),.012,0.,0.)
-      call plchhq(.85,.98,lnote(1:20),.012,0.,0.)
+      call plchhq (0.5,0.98,trim(ltit),.012,0.,0.)
+      call plchhq(.85,.98,trim(lnote),.012,0.,0.)
       call set(x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
       if (colour) then
         call cpsfill(tmp,L,L,M,8,lcflag,tallflg,.false.)
@@ -271,8 +271,8 @@
   220 format ('MAX RATIO =',f9.3)
 
       call set(0.,1.,0.,1.,0.,1.,0.,1.,1)
-      call plchhq (0.5,0.98,ltit(1:7),.012,0.,0.)
-      call plchhq(.85,.98,lnote(1:20),.012,0.,0.)
+      call plchhq (0.5,0.98,trim(ltit),.012,0.,0.)
+      call plchhq(.85,.98,trim(lnote),.012,0.,0.)
       call set(x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
       if (colour) then
         call cpsfill(tmp,L,L,M,8,lcflag,tallflg,.false.)

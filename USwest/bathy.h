@@ -6,8 +6,8 @@
 !  then black outlines are drawn over the color contour regions.
 !  5 is shades of grey, 2 is John's Gebco chart attempt.
       integer         lcflag
-      parameter (     lcflag=-2                               )
-      real            x_v(0:Lm+3,0:Mm+3), y_v(0:Lm+3,0:Mm+3)
+      parameter (     lcflag=-5                               )
+      real            x_v(0:L+2,0:M+2), y_v(0:L+2,0:M+2)
       common /xxyys/  x_v, y_v
       BIGREAL         xp(L,M), yp(L,M), xr(0:L,0:M), yr(0:L,0:M), &
      &                xu(L,0:M), yu(L,0:M), xv(0:L,M), yv(0:L,M), &

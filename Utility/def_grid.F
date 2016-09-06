@@ -33,7 +33,6 @@
      &        u2dgrd(2), v2dgrd(2)
       BIGREAL c0, c1
       parameter  ( c0=0.d0, c1=1.d0 )
-      character (len=1) :: char1
 !
 !=======================================================================
 !  Begin executable code.
@@ -238,11 +237,12 @@
 !
 !  Spherical geometry logical flag and beta-plane parameters.
 !
-      rcode=nf90_def_var(ncgridid,'spherical',nf90_char,varid=varid)
+      rcode=nf90_def_var(ncgridid,'spherical',nf90_int,varid=varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'Grid type logical switch')
-      rcode = nf90_put_att(ncgridid,varid,'option_T', 'spherical')
-      rcode = nf90_put_att(ncgridid,varid,'option_F', 'Cartesian')
+      rcode = nf90_put_att(ncgridid,varid,'flag_values', '0, 1')
+      rcode = nf90_put_att(ncgridid,varid,'flag_meanings',  &
+     &              'Cartesian, spherical')
       rcode=nf90_def_var(ncgridid,'f0',vartyp,varid=varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'Coriolis parameter central value on a beta-plane')
@@ -265,14 +265,10 @@
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'Working bathymetry at RHO-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
-      rcode = nf90_put_att(ncgridid,varid,'field', &
-     &               'bath, scalar')
       rcode=nf90_def_var(ncgridid,'h',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'Final bathymetry at RHO-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
-      rcode = nf90_put_att(ncgridid,varid,'field', &
-     &               'bath, scalar')
       if (rcode.ne.0) then
         print *, trim(nf90_strerror(rcode))
       endif
@@ -283,8 +279,6 @@
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'Coriolis parameter at RHO-points')
       rcode = nf90_put_att(ncgridid,varid,'units', 'second-1')
-      rcode = nf90_put_att(ncgridid,varid,'field', &
-     &              'Coriolis, scalar')
       if (rcode.ne.0) then
         print *, trim(nf90_strerror(rcode))
       endif
@@ -295,26 +289,18 @@
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'curvilinear coordinate metric in XI')
       rcode = nf90_put_att(ncgridid,varid,'units', 'meter-1')
-      rcode = nf90_put_att(ncgridid,varid,'field', &
-     &               'pm, scalar')
       rcode=nf90_def_var(ncgridid,'pn',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'curvilinear coordinate metric in ETA')
       rcode = nf90_put_att(ncgridid,varid,'units', 'meter-1')
-      rcode = nf90_put_att(ncgridid,varid,'field', &
-     &               'pn, scalar')
       rcode=nf90_def_var(ncgridid,'dndx',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'xi derivative of inverse metric factor pn')
+     &              'XI-derivative of inverse metric factor pn')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
-      rcode = nf90_put_att(ncgridid,varid,'field', &
-     &               'dndx, scalar')
       rcode=nf90_def_var(ncgridid,'dmde',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'eta derivative of inverse metric factor pm')
+     &              'ETA-derivative of inverse metric factor pm')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
-      rcode = nf90_put_att(ncgridid,varid,'field', &
-     &               'dmde, scalar')
       if (rcode.ne.0) then
         print *, trim(nf90_strerror(rcode))
       endif
@@ -323,35 +309,35 @@
 !
       rcode=nf90_def_var(ncgridid,'x_rho',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'x location of RHO-points')
+     &              'X-location of RHO-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
       rcode=nf90_def_var(ncgridid,'y_rho',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'y location of RHO-points')
+     &              'Y-location of RHO-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
       rcode=nf90_def_var(ncgridid,'x_psi',vartyp,p2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'x location of PSI-points')
+     &              'X-location of PSI-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
       rcode=nf90_def_var(ncgridid,'y_psi',vartyp,p2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'y location of PSI-points')
+     &              'Y-location of PSI-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
       rcode=nf90_def_var(ncgridid,'x_u',vartyp,u2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'x location of U-points')
+     &              'X-location of U-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
       rcode=nf90_def_var(ncgridid,'y_u',vartyp,u2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'y location of U-points')
+     &              'Y-location of U-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
       rcode=nf90_def_var(ncgridid,'x_v',vartyp,v2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'x location of V-points')
+     &              'X-location of V-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
       rcode=nf90_def_var(ncgridid,'y_v',vartyp,v2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'y location of V-points')
+     &              'Y-location of V-points')
       rcode = nf90_put_att(ncgridid,varid,'units','meter')
       if (rcode.ne.0) then
         print *, trim(nf90_strerror(rcode))
@@ -364,41 +350,57 @@
      &              'latitude of RHO-points')
       rcode = nf90_put_att(ncgridid,varid,'units', &
      &              'degree_north')
+      rcode = nf90_put_att(ncgridid,varid,'standard_name', &
+     &              'latitude')
       rcode=nf90_def_var(ncgridid,'lon_rho',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'longitude of RHO-points')
       rcode = nf90_put_att(ncgridid,varid,'units', &
      &              'degree_east')
+      rcode = nf90_put_att(ncgridid,varid,'standard_name', &
+     &              'longitude')
       rcode=nf90_def_var(ncgridid,'lat_psi',vartyp,p2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'latitude of PSI-points')
       rcode = nf90_put_att(ncgridid,varid,'units', &
      &              'degree_north')
+      rcode = nf90_put_att(ncgridid,varid,'standard_name', &
+     &              'latitude')
       rcode=nf90_def_var(ncgridid,'lon_psi',vartyp,p2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'longitude of PSI-points')
       rcode = nf90_put_att(ncgridid,varid,'units', &
      &              'degree_east')
+      rcode = nf90_put_att(ncgridid,varid,'standard_name', &
+     &              'longitude')
       rcode=nf90_def_var(ncgridid,'lat_u',vartyp,u2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'latitude of U-points')
       rcode = nf90_put_att(ncgridid,varid,'units', &
      &              'degree_north')
+      rcode = nf90_put_att(ncgridid,varid,'standard_name', &
+     &              'latitude')
       rcode=nf90_def_var(ncgridid,'lon_u',vartyp,u2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'longitude of U-points')
       rcode = nf90_put_att(ncgridid,varid,'units', &
      &              'degree_east')
+      rcode = nf90_put_att(ncgridid,varid,'standard_name', &
+     &              'longitude')
       rcode=nf90_def_var(ncgridid,'lat_v',vartyp,v2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'latitude of V-points')
       rcode = nf90_put_att(ncgridid,varid,'units', &
      &              'degree_north')
+      rcode = nf90_put_att(ncgridid,varid,'standard_name', &
+     &              'latitude')
       rcode=nf90_def_var(ncgridid,'lon_v',vartyp,v2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'longitude of V-points')
       rcode = nf90_put_att(ncgridid,varid,'units', &
      &              'degree_east')
+      rcode = nf90_put_att(ncgridid,varid,'standard_name', &
+     &              'longitude')
       if (rcode.ne.0) then
         print *, trim(nf90_strerror(rcode))
       endif
@@ -408,23 +410,23 @@
       rcode=nf90_def_var(ncgridid,'mask_rho',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'mask on RHO-points')
-      rcode = nf90_put_att(ncgridid,varid,'option_0', 'land')
-      rcode = nf90_put_att(ncgridid,varid,'option_1', 'water')
+      rcode = nf90_put_att(ncgridid,varid,'flag_values', '0., 1.')
+      rcode = nf90_put_att(ncgridid,varid,'flag_meanings', 'land, water')
       rcode=nf90_def_var(ncgridid,'mask_u',vartyp,u2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'mask on U-points')
-      rcode = nf90_put_att(ncgridid,varid,'option_0', 'land')
-      rcode = nf90_put_att(ncgridid,varid,'option_1', 'water')
+      rcode = nf90_put_att(ncgridid,varid,'flag_values', '0., 1.')
+      rcode = nf90_put_att(ncgridid,varid,'flag_meanings', 'land, water')
       rcode=nf90_def_var(ncgridid,'mask_v',vartyp,v2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'mask on V-points')
-      rcode = nf90_put_att(ncgridid,varid,'option_0', 'land')
-      rcode = nf90_put_att(ncgridid,varid,'option_1', 'water')
+      rcode = nf90_put_att(ncgridid,varid,'flag_values', '0., 1.')
+      rcode = nf90_put_att(ncgridid,varid,'flag_meanings', 'land, water')
       rcode=nf90_def_var(ncgridid,'mask_psi',vartyp,p2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
      &              'mask on PSI-points')
-      rcode = nf90_put_att(ncgridid,varid,'option_0', 'land')
-      rcode = nf90_put_att(ncgridid,varid,'option_1', 'water')
+      rcode = nf90_put_att(ncgridid,varid,'flag_values', '0., 1.')
+      rcode = nf90_put_att(ncgridid,varid,'flag_meanings', 'land, water')
       if (rcode.ne.0) then
         print *, trim(nf90_strerror(rcode))
       endif
@@ -433,7 +435,7 @@
 !
       rcode=nf90_def_var(ncgridid,'angle',vartyp,t2dgrd,varid)
       rcode = nf90_put_att(ncgridid,varid,'long_name', &
-     &              'angle between xi axis and east')
+     &              'angle between XI-axis and EAST')
       rcode = nf90_put_att(ncgridid,varid,'units','radian')
       if (rcode.ne.0) then
         print *, trim(nf90_strerror(rcode))
@@ -454,10 +456,9 @@
 !
 !  Curvilinear transformation metrics.
 !
-      spherical = .false.
-      WRITE (char1,'(l1)') spherical
+      spherical = 0
       rcode=nf90_inq_varid(ncgridid,'spherical',varid)
-      rcode = nf90_put_var(ncgridid,varid,char1)
+      rcode = nf90_put_var(ncgridid,varid,spherical)
       if (rcode.ne.0) then
         write(stdout,20) 'spherical', TRIM(gridfile)
         print *, trim(nf90_strerror(rcode))

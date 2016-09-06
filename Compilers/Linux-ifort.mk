@@ -22,8 +22,9 @@
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional -DLINUX
             CLEAN := Bin/cpp_clean
-               LD := ncargf90
-          LDFLAGS := -Vaxlib
+#               LD := ncargf90
+               LD := ifort
+          LDFLAGS := 
                AR := ar
           ARFLAGS := r
 	    MKDIR := mkdir -p
@@ -38,11 +39,11 @@
 # Library locations, can be overridden by environment variables.
 #
 
-    NETCDF_INCDIR ?= /opt/intel/netcdf/include
-    NETCDF_LIBDIR ?= /opt/intel/netcdf/lib
+        NC_CONFIG ?= nc-config
+    NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
+             LIBS := $(shell $(NC_CONFIG) --flibs)
 
          CPPFLAGS += -I$(NETCDF_INCDIR)
-             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
 
 ifdef ARPACK
     ARPACK_LIBDIR ?= /opt/intelsoft/ARPACK

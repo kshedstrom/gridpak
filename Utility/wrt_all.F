@@ -86,10 +86,10 @@
 !  Write out grid metrics.
 !
       rcode=nf90_inq_varid(ncgridid,'spherical',varid)
-      if (spherical) then
-        rcode = nf90_put_var(ncgridid,varid,'T')
+      if (spherical == 1) then
+        rcode = nf90_put_var(ncgridid,varid,1)
       else
-        rcode = nf90_put_var(ncgridid,varid,'F')
+        rcode = nf90_put_var(ncgridid,varid,0)
       endif
       if (rcode.ne.0) then
         write(stdout,20) 'spherical', TRIM(gridfile)
