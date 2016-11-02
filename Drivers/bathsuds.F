@@ -143,7 +143,7 @@
       call getxxyy
       call pcseti('QUALITY',1)
 
-      call ploth(gridid(1:40),colour,grover)
+!     call ploth(gridid(1:40),colour,grover)
 #endif  /* PLOTS */
 
 #if KEEP_SHALLOW
