@@ -16,7 +16,7 @@
 
 !  dimensions of work arrays
       integer       lrwk, liwk, lama
-      parameter (   lrwk=5000, liwk=2000, lama=12000   )
+      parameter (   lrwk=5000, liwk=2000, lama=24000   )
       integer       iwrk(liwk), iama(lama)
       real          rwrk(lrwk), ciu, clev, spval
 
@@ -178,7 +178,7 @@
 
 !  dimensions of work arrays
       integer         lrwk, liwk, lawk, nlevb, lcra
-      parameter (     lrwk=100000, liwk=100000, lawk=2000000, nlevb=30, &
+      parameter (     lrwk=100000, liwk=100000, lawk=5000000, nlevb=30, &
      &                lcra=100000                                    )
       integer         iwrk(liwk), iama(lawk), iara(12), igra(nlevb)
       real            rwrk(lrwk), xcra(lcra), ycra(lcra)

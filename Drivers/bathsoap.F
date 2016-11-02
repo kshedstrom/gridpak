@@ -119,7 +119,7 @@
 #endif  /* PLOTS */
 
       do k=1,npass
-        call shapiro(h,Lp,Mp,2,wrk1,wrk2,mask_rho)
+        call shapiro(h,Lp,Mp,4,wrk1,wrk2,mask_rho)
         rmax = 0.
         ii = 1
         jj = 1

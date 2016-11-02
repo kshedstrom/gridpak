@@ -182,7 +182,7 @@
 #endif  /* KEEP_SHALLOW */
 
         call shapiro(h,Lp,Mp,2,wrk1,wrk2)
-!       call ploth(gridid(1:40),colour,grover)
+!        call ploth(gridid(1:40),colour,grover)
 !  zero slope on h at boundaries
         do i=1,Lm
           h(i,0) = h(i,1)

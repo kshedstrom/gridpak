@@ -18,7 +18,8 @@
 # First the defaults
 #
                FC := gfortran
-           FFLAGS := -frepack-arrays
+#           FFLAGS := -frepack-arrays
+           FFLAGS := -frepack-arrays -fno-second-underscore -C
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional
             CLEAN := Bin/cpp_clean
@@ -37,9 +38,6 @@
 #
 # Library locations, can be overridden by environment variables.
 #
-
-#     NETCDF_INCDIR := /archive/u1/uaf/kate/netcdf/include
-#     NETCDF_LIBDIR := /archive/u1/uaf/kate/netcdf/lib
 
         NC_CONFIG ?= nc-config
     NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include

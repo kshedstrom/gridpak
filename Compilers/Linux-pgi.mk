@@ -22,7 +22,8 @@
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional -DLINUX
             CLEAN := Bin/cpp_clean
-               LD := ./ncargf90
+#               LD := ncargf90
+               LD := ${FC}
           LDFLAGS := 
                AR := ar
           ARFLAGS := r
@@ -41,6 +42,8 @@
         NC_CONFIG ?= nc-config
     NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
              LIBS := $(shell $(NC_CONFIG) --flibs)
+
+         CPPFLAGS += -I$(NETCDF_INCDIR)
 
 ifdef ARPACK
     ARPACK_LIBDIR ?= /opt/pgisoft/ARPACK

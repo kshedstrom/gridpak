@@ -123,7 +123,7 @@
       end if
 
 ! If on a sphere then compute spherical pm,pn factors
-      if (spherical .and. readlat) then
+      if (spherical == 1 .and. readlat) then
 
         do j = 1,Mm
           do i = 1,Lm
@@ -318,7 +318,7 @@
 
       subroutine plotmnf(gridid,colour,grover)
 #include "bathy.h"
-      real            tmp(L,M), htmp(0:L,0:M)
+      real            tmp(L,M), tmp2(L,M), tmp3(L,M), htmp(0:L,0:M)
       character*20    ltit
       character*24    lnote, lnote2
       character*40    gridid
@@ -369,8 +369,8 @@
       call set (0.,1.,0.,1.,0.,1.,0.,1.,1)
       call plchhq(.5,.98,ltit,.012,0.,0.)
       if (colour) then
-        call plchhq(.85,.98,lnote(1:17),.012,0.,0.)
-        call plchhq(.85,.95,lnote2(1:17),.012,0.,0.)
+        call plchhq(.85,.98,trim(lnote),.012,0.,0.)
+        call plchhq(.85,.95,trim(lnote2),.012,0.,0.)
       endif
       call set (x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
       if (colour) then
@@ -392,33 +392,107 @@
 
       do j=1,M
         do i=1,L
-          tmp(i,j) = 4./(pn(i,j) + pn(i-1,j) + pn(i,j-1) + &
+          tmp2(i,j) = 4./(pn(i,j) + pn(i-1,j) + pn(i,j-1) + &
      &        pn(i-1,j-1))
         enddo
       enddo
 
-      dymin = vsmin(tmp,L*M)
-      write (lnote,160) dymin
-  160 format ('MIN DY =',f9.0)
-      dymax = vsmax(tmp,L*M)
-      write (lnote2,170) dymax
-  170 format ('MAX DY =',f9.0)
+      dymin = vsmin(tmp2,L*M)
+      write (lnote,150) dymin
+  150 format ('MIN DY =',f9.0)
+      dymax = vsmax(tmp2,L*M)
+      write (lnote2,155) dymax
+  155 format ('MAX DY =',f9.0)
 
       call set (0.,1.,0.,1.,0.,1.,0.,1.,1)
       call plchhq(.5,.98,ltit,.012,0.,0.)
       if (colour) then
-        call plchhq(.85,.98,lnote(1:17),.012,0.,0.)
-        call plchhq(.85,.95,lnote2(1:17),.012,0.,0.)
+        call plchhq(.85,.98,trim(lnote),.012,0.,0.)
+        call plchhq(.85,.95,trim(lnote2),.012,0.,0.)
       endif
       call set (x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
       if (colour) then
-        call cpsfill (tmp,L,L,M,8,lcflag,tallflg,.false.)
+        call cpsfill(tmp2,L,L,M,8,lcflag,tallflg,.false.)
         if (grover) call grdplt(x1,x2,y1,y2,gridid)
 #if DRAW_COASTS
         call drawcoast
 #endif  /* DRAW_COASTS */
       else
-        call cpshift(tmp,L,L,M,-20.,.false.,1.)
+        call cpshift(tmp2,L,L,M,-20.,.false.,1.)
+#if DRAW_COASTS
+        call drawcoast
+#endif  /* DRAW_COASTS */
+      endif
+      call frame
+
+      write (ltit,160)
+  160 format ('RMS gridsize (km)')
+
+      do j=1,M
+        do i=1,L
+          tmp3(i,j)=sqrt(tmp(i,j)**2 + tmp2(i,j)**2)/sqrt(2.0d0)*0.001d0
+        enddo
+      enddo
+
+      dymin = vsmin(tmp3,L*M)
+      write (lnote,161) dymin
+  161 format ('MIN SIZE =',f9.2)
+      dymax = vsmax(tmp3,L*M)
+      write (lnote2,162) dymax
+  162 format ('MAX SIZE =',f9.2)
+
+      call set (0.,1.,0.,1.,0.,1.,0.,1.,1)
+      call plchhq(.5,.98,ltit,.012,0.,0.)
+      if (colour) then
+        call plchhq(.85,.98,trim(lnote),.012,0.,0.)
+        call plchhq(.85,.95,trim(lnote2),.012,0.,0.)
+      endif
+      call set (x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
+      if (colour) then
+        call cpsfill(tmp3,L,L,M,8,lcflag,tallflg,.false.)
+        if (grover) call grdplt(x1,x2,y1,y2,gridid)
+#if DRAW_COASTS
+        call drawcoast
+#endif  /* DRAW_COASTS */
+      else
+        call cpshift(tmp3,L,L,M,-20.,.false.,1.)
+#if DRAW_COASTS
+        call drawcoast
+#endif  /* DRAW_COASTS */
+      endif
+      call frame
+
+      write (ltit,170)
+  170 format ('ASPECT RATIO')
+
+      do j=1,M
+        do i=1,L
+          tmp3(i,j) = tmp(i,j)/tmp2(i,j)
+        enddo
+      enddo
+
+      dymin = vsmin(tmp3,L*M)
+      write (lnote,171) dymin
+  171 format ('MIN RATIO =',f9.2)
+      dymax = vsmax(tmp3,L*M)
+      write (lnote2,172) dymax
+  172 format ('MAX RATIO =',f9.2)
+
+      call set (0.,1.,0.,1.,0.,1.,0.,1.,1)
+      call plchhq(.5,.98,ltit,.012,0.,0.)
+      if (colour) then
+        call plchhq(.85,.98,trim(lnote),.012,0.,0.)
+        call plchhq(.85,.95,trim(lnote2),.012,0.,0.)
+      endif
+      call set (x1,x2,y1,y2,xmin,xmax,ymin,ymax,1)
+      if (colour) then
+        call cpsfill(tmp3,L,L,M,8,lcflag,tallflg,.false.)
+        if (grover) call grdplt(x1,x2,y1,y2,gridid)
+#if DRAW_COASTS
+        call drawcoast
+#endif  /* DRAW_COASTS */
+      else
+        call cpshift(tmp3,L,L,M,-20.,.false.,1.)
 #if DRAW_COASTS
         call drawcoast
 #endif  /* DRAW_COASTS */

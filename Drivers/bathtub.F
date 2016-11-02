@@ -34,30 +34,43 @@
       parameter     ( evenflag = .true. )
       parameter     ( ILON=360*12+1, ILAT=180*12+1 )
       parameter     ( DELTA_X=1/12.d0, DELTA_Y=1/12.d0 )
-      integer*2       bathy2(ILON-1,ILAT)
 #elif ETOPO2
       parameter     ( evenflag = .true. )
       parameter     ( ILON=360*30+1, ILAT=180*30+1 )
       parameter     ( DELTA_X=1/30.d0, DELTA_Y=1/30.d0 )
-      integer*2       bathy2(ILON-1,ILAT)
+#elif ETOPO1
+      parameter     ( evenflag = .true. )
+      parameter     ( ILON=360*60+1, ILAT=180*60+1 )
+      parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
+#elif SRTM30
+      parameter     ( evenflag = .true. )
+      parameter     ( ILON=360*120+1, ILAT=180*120 )
+      parameter     ( DELTA_X=1/120.d0, DELTA_Y=1/120.d0 )
+#elif IBCAO
+      parameter     ( evenflag = .true. )
+      parameter     ( ILON=43201, ILAT=3121 )
+      parameter     ( DELTA_X=1/120.d0, DELTA_Y=1/120.d0 )
 #elif GEBCO
       parameter     ( evenflag = .true. )
       parameter     ( ILON=360*60+1, ILAT=180*60+1 )
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
-#else
+#elif ARDEM
       parameter     ( evenflag = .true. )
-! Seth's AK bathy
       parameter     ( ILON=6601, ILAT=3601)
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/120.d0)
-!     parameter     ( ILON=2601, ILAT=1401, DELTA=1/30.d0)
-! Hank's CGOA
-!     parameter     ( ILON=1861, ILAT=1093, DELTA=1/60.d0)
-!  Smith and Sandwell
-!      parameter     ( evenflag = .false. )
-!      parameter     ( ILON=1771, ILAT=1978)
+#elif PALAU_BATHY
+      parameter     ( evenflag = .false. )
+      parameter     ( ILON=2850, ILAT=2409)
+#else
+!  Smith and Sandwell subset
+      parameter     ( evenflag = .false. )
+      parameter     ( ILON=721, ILAT=918)
 
-#endif  /* DAMEE */
-      integer*2       bathy(ILON,ILAT)
+#endif
+      integer*2, allocatable ::       bathy(:,:)
+#if ETOPO5 || ETOPO2 || SRTM30
+      integer*2, allocatable ::       bathy2(:,:)
+#endif
       BIGREAL         lat(ILAT), lon(ILON)
       common /ll/     lat, lon
       BIGREAL         corner(2,2), dx, dy
@@ -68,7 +81,7 @@
       parameter(LONSUB=(ILON-1)/NSUB, LATSUB=(ILAT-1)/NSUB )
       real            tmp(LONSUB,LATSUB), htmp(0:L,0:M)
       character*24    lbl
-      real            alatn, alats, alonw, alone
+      BIGREAL         alatn, alats, alonw, alone
       BIGREAL         depthmxr, depthmnr,                               &
      &                htmp1, htmp2, x1, y1
       BIGREAL         vmin, vmax
@@ -85,6 +98,10 @@
 
 #include "gridid.h"
 
+      allocate(bathy(ILON,ILAT))
+#if ETOPO5 || ETOPO2 || SRTM30
+      allocate(bathy2(ILON-1,ILAT))
+#endif
 !  depths less than depthmin will be set to depthmin
       print *, 'minimum depth (negative is land elevation)'
       read(5,*) depthmin
@@ -94,14 +111,16 @@
       print *, 'apply mask? (T/F)'
       read(5,*) mask_flag
 
-#if ETOPO5 || ETOPO2
+#if ETOPO5 || ETOPO2 || SRTM30
       call extract(lon,lat,bathy2,ILON-1,ILAT)
 
 !  Longitudes between 0 and 360
-      lon(ILON) = 180.
+      lon(ILON) = lon(1)+360.
+# if ETOPO5
       do i=1,ILON
         if (lon(i) .lt. 0.) lon(i) = lon(i) + 360.
       enddo
+# endif
 
 !  Copy value at one end of the Earth to other end
       do i=1,ILON-1
@@ -116,9 +135,11 @@
       call extract(lon,lat,bathy,ILON,ILAT)
 
 !  Longitudes between 0 and 360
+# ifndef ETOPO1
       do i=1,ILON
         if (lon(i) .lt. 0.) lon(i) = lon(i) + 360.
       enddo
+# endif
 #endif   /* ETOPO5 || ETOPO2 */
 
 !  Our convention has been negative for land elevations
@@ -145,6 +166,7 @@
       maxlat = vmax(lat_rho,Lp*Mp)
       maxlon = vmax(lon_rho,Lp*Mp)
 
+#ifndef ETOPO1
 #if ETOPO5
       if (minlon .lt. 0.) then
 #endif /* ETOPO5 */
@@ -158,11 +180,13 @@
 #if ETOPO5
       endif
 #endif /* ETOPO5 */
+#endif /* ETOPO1 */
 
       print *,'latitude range of grid ',minlat,maxlat
       print *,'latitude range of data ',alats,alatn
       print *,'longitute range of grid ',minlon,maxlon
       print *,'longitute range of data ',alonw,alone
+#if !defined IBCAO && !defined ARDEM
       if (minlat .lt. alats .or. maxlat .gt. alatn) then
         print *,'Insufficient latitude range of data'
         print *,'try again ... '
@@ -181,6 +205,7 @@
         call exit(1)
 #endif  /* NO_EXIT */
       end if
+#endif  /* !IBCAO */
 
 !  h at lat_rho, lon_rho, before h is clipped
 
@@ -226,6 +251,14 @@
           do j=0,M
             i1 = int((lon_rho(i,j) - alonw)/DELTA_X) + 1
             j1 = int((lat_rho(i,j) - alats)/DELTA_Y) + 1
+#if defined IBCAO
+            h(i,j) = 0.0
+            if (j1 < 1) cycle
+#elif defined ARDEM
+            h(i,j) = 0.0
+            if (j1 < 1 .or. i1 < 1) cycle
+            if (j1 >= ILAT .or. i1 >= ILON) cycle
+#endif
             x1 = lon_rho(i,j) - (alonw + (i1-1.)*DELTA_X)
             y1 = lat_rho(i,j) - (alats + (j1-1.)*DELTA_Y)
             corner(1,1) = bathy(i1,j1)
@@ -262,7 +295,11 @@
       if (mask_flag) then
         do i=0,L
           do j=0,M
+#ifdef PALAU_BATHY
+            if (h(i,j) .le. 50.) then
+#else
             if (h(i,j) .le. 0.) then
+#endif
               mask_rho(i,j) = zero
             else
               mask_rho(i,j) = one
@@ -339,6 +376,14 @@
           do j=0,M
             i1 = int((lon_rho(i,j) - alonw)/DELTA_X) + 1
             j1 = int((lat_rho(i,j) - alats)/DELTA_Y) + 1
+#if defined IBCAO
+            h(i,j) = 0.0
+            if (j1 < 1) cycle
+#elif defined ARDEM
+            h(i,j) = 0.0
+            if (j1 < 1 .or. i1 < 1) cycle
+            if (j1 >= ILAT .or. i1 >= ILON) cycle
+#endif
             x1 = lon_rho(i,j) - (alonw + (i1-1.)*DELTA_X)
             y1 = lat_rho(i,j) - (alats + (j1-1.)*DELTA_Y)
             corner(1,1) = bathy(i1,j1)
@@ -424,7 +469,6 @@
 #else
       call exit(0)
 #endif  /* NO_EXIT */
-  220 call crash('bathtub: read error', 0)
       end
 
 ! ******************************************************************
@@ -503,7 +547,7 @@
       integer         find_i
       BIGREAL         lon_rho
       integer         ILON
-      real            lon(ILON)
+      BIGREAL         lon(ILON)
       integer         mid, high, low
 
       low = 1
@@ -536,7 +580,7 @@
       integer         find_j
       BIGREAL         lat_rho
       integer         ILAT
-      real            lat(ILAT)
+      BIGREAL         lat(ILAT)
       integer         mid, high, low
 
       low = 1
