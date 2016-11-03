@@ -35,6 +35,12 @@ endif
 
   sources    := 
   libraries  :=
+  includes   := Include_Bering_Strait
+# includes   := Include_Is
+# includes   := Include_Ben
+# includes   := Include_S_Africa
+# includes   := Include_supercritical
+
 
 #==========================================================================
 #  Start of user-defined options. Modify macro variables: on is TRUE while
@@ -62,7 +68,7 @@ endif
 #  NetCDF and so on.
 #--------------------------------------------------------------------------
 
-        FORT ?= ifort
+        FORT ?= gfortran
 
 #--------------------------------------------------------------------------
 #  Set directory for executable.
@@ -234,8 +240,6 @@ all: $(SCRATCH_DIR) $(SCRATCH_DIR)/MakeDepend $(COAST) $(GRID) $(SQGRID) \
 	$(TOLAT) $(BATHTUB) $(BATHSUDS) $(BATHSOAP) $(SPHERE)
 
 modules  := Utility Drivers
-
-includes := Include
 
 vpath %.F $(modules)
 vpath %.h $(includes)

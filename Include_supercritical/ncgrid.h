@@ -1,6 +1,6 @@
 !
 !=======================================================================
-!  Include file "ncgrid.h"
+!  Include file "ncscrum.h"
 !=======================================================================
 !
 !  maxvar      Maximum number of variables for input NetCDF files.

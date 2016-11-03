@@ -32,6 +32,7 @@
 !  IBIG is the largest number of points to be read in for one
 !  boundary
 
+      implicit none
 #include "griddefs.h"
 #include "grid.h"
 #include "ncgrid.h"
@@ -75,26 +76,54 @@
 !  initialize vector z (complex) with contour of physical boundary
       call z_init(z, xb, yb)
 
-#if FOO
-#if DCOMPLEX
-!  On 32-bit machines things work much better if the conformal mapping
-!  is done in double precision complex arithmetic
+!  Error code
+      ierr = 0
 
-      do i=1,N4
-         zwrk(i)=dcmplx(real(z(i)),aimag(z(i)))
-      enddo
-#endif  /* DCOMPLEX */
-#endif
-
-!  Map physical boundary to a rectangle
-      err = 0
-      error_old = 1.e20
-      error = 1.e19
-      it = 0
-      do while (err==0 .and. error < error_old)
 !  Calculate departure of contour from rectangular
+      error = 0.
+#if DBLEPREC
+      do i=1,N1
+         error = error + dabs(dreal(z(i))-dreal(z(1)))
+      enddo
+      do i=N1+1,N2
+         error = error + dabs(dimag(z(i))-dimag(z(N1+1)))
+      enddo
+      do i=N2+1,N3
+         error = error + dabs(dreal(z(i))-dreal(z(N2+1)))
+      enddo
+      do i=N3+1,N4
+         error = error + dabs(dimag(z(i))-dimag(z(N3+1)))
+      enddo
+#else
+      do i=1,N1
+         error = error + abs(real(z(i))-real(z(1)))
+      enddo
+      do i=N1+1,N2
+         error = error + abs(aimag(z(i))-aimag(z(N1+1)))
+      enddo
+      do i=N2+1,N3
+         error = error + abs(real(z(i))-real(z(N2+1)))
+      enddo
+      do i=N3+1,N4
+         error = error + abs(aimag(z(i))-aimag(z(N3+1)))
+      enddo
+#endif  /* DBLEPREC */
+      error = error/FLoaT(N4)
+      error_old = 1.2*error
+
+      it = 0
+!  Map physical boundary to a rectangle
+      do while (ierr==0 .and. error < error_old)
          it = it+1
          error_old = error
+         z_old = z
+#if DCOMPLEX
+         call rect(z,N,N1,N2,N3,N4,ierr)
+#else
+         call rects(z,N,N1,N2,N3,N4,ierr)
+#endif  /* DCOMPLEX */
+
+!  Calculate departure of contour from rectangular
          error = 0.
 #if DBLEPREC
          do i=1,N1
@@ -127,14 +156,6 @@
          write(6,110) it,error
   110    format(' rectangularity error in mapped contour at', &
      &        ' iteration ',i2,' is ',1pe11.4)
-
-         z_old = z
-#if DCOMPLEX
-!        call rect(zwrk,N,N1,N2,N3,N4,err)
-         call rect(z,N,N1,N2,N3,N4,err)
-#else
-         call rects(z,N,N1,N2,N3,N4,err)
-#endif  /* DCOMPLEX */
       enddo
       z = z_old
 
@@ -500,7 +521,6 @@
 #else
       call exit(0)
 #endif  /* NO_EXIT */
-  140 call crash('grid: error while outputing solution', 0)
       end
 
 ! *******************************************************************

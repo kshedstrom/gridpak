@@ -1,14 +1,14 @@
 #include "griddefs.h"
 #include "bathy.h"
       integer         IBIG
-      parameter (     IBIG=4000    )
+      parameter (     IBIG=400    )
 !  IBIG is the largest number of points to be read in for one
 !  boundary.
 !
 !  original distribution of x,y points is preserved on boundary kb1
 !  and kb2:
       integer         kb1, kb2
-      parameter (     kb1 = 1, kb2 = 2   )
+      parameter (     kb1 = 3, kb2 = 4   )
 
       integer         L2, M2, L2big, M2big, nwrk
       integer         N, N1, N2, N3, N4
@@ -60,7 +60,7 @@
       integer         Lmiddle, Mmiddle, iout1, iout2
       parameter   (   pleft1=.false., pleft2=.false., &
      &                pbot1=.false., pbot2=.false., &
-     &                Lmiddle=49, Mmiddle=25, &
+     &                Lmiddle=19, Mmiddle=15, &
      &                iout1=13, iout2=14             )
 
 !  These variables are used for writing out a subset of the psi points

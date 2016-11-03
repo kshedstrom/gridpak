@@ -8,7 +8,7 @@
 !  original distribution of x,y points is preserved on boundary kb1
 !  and kb2:
       integer         kb1, kb2
-      parameter (     kb1 = 1, kb2 = 2   )
+      parameter (     kb1 = 3, kb2 = 2   )
 
       integer         L2, M2, L2big, M2big, nwrk
       integer         N, N1, N2, N3, N4
@@ -60,15 +60,15 @@
       integer         Lmiddle, Mmiddle, iout1, iout2
       parameter   (   pleft1=.false., pleft2=.false., &
      &                pbot1=.false., pbot2=.false., &
-     &                Lmiddle=49, Mmiddle=25, &
+     &                Lmiddle=11, Mmiddle=15, &
      &                iout1=13, iout2=14             )
 
 !  These variables are used for writing out a subset of the psi points
 !  to be used in generating a nested domain.
       logical        subset
       integer        Lwest, Least, Msouth, Mnorth, iout3
-      parameter    ( subset = .false., Lwest = 10, Least = 20, &
-     &               Msouth = 10, Mnorth = 20, iout3 = 15    )
+      parameter    ( subset = .false., Lwest = 14, Least = 17, &
+     &               Msouth = 6, Mnorth = 14, iout3 = 15    )
 
 !  xpots unit numbers
       integer         ipot1, ipot2, ipot3, ipot4

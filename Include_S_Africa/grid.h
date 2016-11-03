@@ -44,7 +44,7 @@
      &                even1, even2, even3, even4
       parameter   (  rbnd1=.true., rbnd2=.true., &
      &               rbnd3=.true., rbnd4=.true., &
-     &               even1=.true., even2=.true., &
+     &               even1=.true., even2=.false., &
      &               even3=.true., even4=.true.  )
 
 !  The following are used when you need to fit a boundary with

@@ -1,0 +1,32 @@
+This is grid generation software used for building ROMS grids the
+old-fashioned way. The manual (which needs updating) is here:
+    https://marine.rutgers.edu/po/tools/gridpak/grid_manual.ps.gz
+
+You must have consistent versions of a Fortran compiler, the NCL package
+and the NetCDF library.
+
+The current distribution gets rid of the sqgrid executable in favor of
+grid knowing how to gracefully handle rectangular grids.
+
+I'm distributing it with several test cases, each with their own Include
+directory. Point to the appropriate Include directory in the Makefile. The
+grid input file(s) are in the current directory. The domains here:
+
+* Benguela: a rotated rectangular grid
+* Bering Strait: a non-rotated rectangle
+* Island: a small very curvilinear toy domain between Iceland and Greenland
+* S_Africa: a U-shaped domain around southern Africa using xpots on side 2:
+    xpots -N 1601 -F fort.42
+* Supercritical: an idealized test problem in x,y space with a flat bottom
+
+Issues:
+
+* There's something wrong with the Makefile dependencies and I don't know
+  why - trying to do everything the ROMS way (and the ROMS way works). Best
+  to do "make clean" between builds if anything at all goes wrong.
+
+* I'd put xpots out on github if it was working... The graphics now show
+  up for me all in black, so it's quite tricky to use.
+
+Notes on Benguela bathymetry:
+      hmin=50, 300 bathsuds, 1 bathsoap => 0.33 rmax
