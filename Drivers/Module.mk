@@ -13,9 +13,6 @@ $(COAST):	$(libraries) $(SCRATCH_DIR)/coast.o
 $(GRID):	$(libraries) $(SCRATCH_DIR)/grid.o
 	$(LD) $(FFLAGS) $(SCRATCH_DIR)/grid.o $(libraries) \
 	    $(LIBS_WIN32) /exe:$(BIN_WIN32) /link $(LDFLAGS)
-$(SQGRID):	$(libraries) $(SCRATCH_DIR)/sqgrid.o
-	$(LD) $(FFLAGS) $(SCRATCH_DIR)/sqgrid.o $(libraries) \
-	    $(LIBS_WIN32) /exe:$(BIN_WIN32) /link $(LDFLAGS)
 $(TOLAT):	$(libraries) $(SCRATCH_DIR)/tolat.o
 	$(LD) $(FFLAGS) $(SCRATCH_DIR)/tolat.o $(libraries) \
 	    $(LIBS_WIN32) /exe:$(BIN_WIN32) /link $(LDFLAGS)
@@ -37,9 +34,6 @@ $(COAST):	$(libraries) $(SCRATCH_DIR)/coast.o
 	    $(libraries) $(LIBS)
 $(GRID):	$(libraries) $(SCRATCH_DIR)/grid.o
 	$(LD) $(FFLAGS) $(LDFLAGS) $(SCRATCH_DIR)/grid.o -o $@ \
-	    $(libraries) $(LIBS)
-$(SQGRID):	$(libraries) $(SCRATCH_DIR)/sqgrid.o
-	$(LD) $(FFLAGS) $(LDFLAGS) $(SCRATCH_DIR)/sqgrid.o -o $@ \
 	    $(libraries) $(LIBS)
 $(TOLAT):	$(libraries) $(SCRATCH_DIR)/tolat.o
 	$(LD) $(FFLAGS) $(LDFLAGS) $(SCRATCH_DIR)/tolat.o -o $@ \

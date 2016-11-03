@@ -38,9 +38,7 @@
       logical         hflat, colour, grover, readlat
       BIGREAL         el2, sum, dxmin, dist, galpha
       integer         i, j, imap
-      BIGREAL         a1, a2, av2, vmin, vmax
-
-      av2(a1,a2) = .5*(a1+a2)
+      BIGREAL         a1, a2, vmin, vmax
 
       data DTOR / .017453292519943 /
       data RTOD / 57.2957795130823 /

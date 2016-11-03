@@ -22,8 +22,8 @@
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional -DLINUX
             CLEAN := Bin/cpp_clean
-#               LD := ncargf90
-               LD := ifort
+               LD := ncargf90
+#               LD := ifort
           LDFLAGS := 
                AR := ar
           ARFLAGS := r
