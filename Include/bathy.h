@@ -33,5 +33,5 @@
       common /angles/ angle
       integer*2       depthmin, depthmax
       common /hmins/  depthmin, depthmax
-      logical         spherical
+      integer         spherical
       common /logic/  spherical

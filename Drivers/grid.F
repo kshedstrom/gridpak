@@ -1,7 +1,7 @@
       program gridmain
 
 !  *** In gridpak version 5.4 ***** October 18, 2001 ****************
-!  Kate Hedstrom  (kate@arsc.edu)
+!  Kate Hedstrom  (kshedstrom@alaska.edu)
 !  John Wilkin  (wilkin@imcs.rutgers.edu)
 !  ******************************************************************
 !
@@ -13,7 +13,7 @@
 !     paper no. 87-2057, AIAA/SAE/ASME/ASEE 23rd Joint Propulsion
 !     Conference, San Diego, California, June 1987.
 !
-!     It now uses mud2 version 3.0 or sepeli.
+!     It now uses sepeli only.
 !
 !     This version uses double precision complex arithmetic.  If your
 !     compiler does not support double precision complex, undefine
@@ -24,24 +24,23 @@
 !     (e.g. a Cray) has a greater than 32-bit word length.
 
 !     Direct any question/problems (and reports of errors!) to:
-!     John Wilkin
-!     CSIRO Division of Oceanography
-!     GPO Box 1538, Hobart
-!     Tasmania  7001, Australia
+!     Kate Hedstrom
+!     kshedstrom@alaska.edu
 !     email: wilkin@flood.ml.csiro.au
 
 !  ITMAX is the number of iterations to perform
 !  IBIG is the largest number of points to be read in for one
 !  boundary
 
+      implicit none
 #include "griddefs.h"
 #include "grid.h"
 #include "ncgrid.h"
 #if DCOMPLEX
       complex*16      zwrk(M2+L2+M2+L2)
 #endif  /* DCOMPLEX */
-      BIGCOMPLEX      z(M2+L2+M2+L2)
-      integer         i, j, k, ikb, ierr
+      BIGCOMPLEX      z(M2+L2+M2+L2), z_old(M2+L2+M2+L2)
+      integer         i, j, ikb, ierr, it
       BIGREAL         xb(M2+L2+M2+L2), yb(M2+L2+M2+L2), wrk(0:M2+L2), &
      &                wxi(0:L2), weta(0:M2), s1(0:L2), s2(0:M2), &
      &                xint(0:M2+L2), yint(0:M2+L2), &
@@ -51,7 +50,7 @@
       BIGREAL         pertrb, dum, t1, t2, zero
       parameter  (    zero = 0.d0  )
       character*40    lbl
-      BIGREAL         errplt(Lm,Mm), stmp, error, area, tarea
+      BIGREAL         errplt(Lm,Mm), stmp, error, area, tarea, error_old
       equivalence     (rhs,errplt)
       external        coef, bndyc, cofx, cofy
 
@@ -77,34 +76,52 @@
 !  initialize vector z (complex) with contour of physical boundary
       call z_init(z, xb, yb)
 
-#if FOO
-#if DCOMPLEX
-!  On 32-bit machines things work much better if the conformal mapping
-!  is done in double precision complex arithmetic
+!  Error code
+      ierr = 0
 
-      do i=1,N4
-         zwrk(i)=dcmplx(real(z(i)),aimag(z(i)))
+!  Calculate departure of contour from rectangular
+      error = 0.
+#if DBLEPREC
+      do i=1,N1
+         error = error + dabs(dreal(z(i))-dreal(z(1)))
       enddo
-#endif  /* DCOMPLEX */
-#endif
-
-!  Map physical boundary to a rectangle
-      do 120 k=1,ITMAX
-#if DCOMPLEX
-!        call rect(zwrk,N,N1,N2,N3,N4)
-         call rect(z,N,N1,N2,N3,N4)
+      do i=N1+1,N2
+         error = error + dabs(dimag(z(i))-dimag(z(N1+1)))
+      enddo
+      do i=N2+1,N3
+         error = error + dabs(dreal(z(i))-dreal(z(N2+1)))
+      enddo
+      do i=N3+1,N4
+         error = error + dabs(dimag(z(i))-dimag(z(N3+1)))
+      enddo
 #else
-         call rects(z,N,N1,N2,N3,N4)
-#endif  /* DCOMPLEX */
+      do i=1,N1
+         error = error + abs(real(z(i))-real(z(1)))
+      enddo
+      do i=N1+1,N2
+         error = error + abs(aimag(z(i))-aimag(z(N1+1)))
+      enddo
+      do i=N2+1,N3
+         error = error + abs(real(z(i))-real(z(N2+1)))
+      enddo
+      do i=N3+1,N4
+         error = error + abs(aimag(z(i))-aimag(z(N3+1)))
+      enddo
+#endif  /* DBLEPREC */
+      error = error/FLoaT(N4)
+      error_old = 1.2*error
 
-#if FOO
+      it = 0
+!  Map physical boundary to a rectangle
+      do while (ierr==0 .and. error < error_old)
+         it = it+1
+         error_old = error
+         z_old = z
 #if DCOMPLEX
-!  Convert back to single precision complex for all other calculations
-         do i=1,N4
-            z(i)=cmplx(sngl(dreal(zwrk(i))),sngl(dimag(zwrk(i))))
-         enddo
+         call rect(z,N,N1,N2,N3,N4,ierr)
+#else
+         call rects(z,N,N1,N2,N3,N4,ierr)
 #endif  /* DCOMPLEX */
-#endif
 
 !  Calculate departure of contour from rectangular
          error = 0.
@@ -136,10 +153,11 @@
          enddo
 #endif  /* DBLEPREC */
          error = error/FLoaT(N4)
-         write(6,110)k,error
+         write(6,110) it,error
   110    format(' rectangularity error in mapped contour at', &
-     &        ' iteration ',i2,' is ',1pe10.4)
-  120 continue
+     &        ' iteration ',i2,' is ',1pe11.4)
+      enddo
+      z = z_old
 
 !  Store distribution of xi,eta points along boundaries (used to
 !  compute coefficients of elliptic equation)
@@ -289,26 +307,26 @@
 
 !  Compute pm,pn factors
       do j = 1,Mm
-         do i = 1,Lm
-            pm(i,j) = 1.0/sqrt( ( x(2*i,2*j-1)-x(2*i-2,2*j-1) )**2 &
+        do i = 1,Lm
+          pm(i,j) = 1.0/sqrt( ( x(2*i,2*j-1)-x(2*i-2,2*j-1) )**2 &
      &        + ( y(2*i,2*j-1)-y(2*i-2,2*j-1) )**2 )
-            pn(i,j) = 1.0/sqrt( ( x(2*i-1,2*j)-x(2*i-1,2*j-2) )**2 &
+          pn(i,j) = 1.0/sqrt( ( x(2*i-1,2*j)-x(2*i-1,2*j-2) )**2 &
      &        + ( y(2*i-1,2*j)-y(2*i-1,2*j-2) )**2 )
-         enddo
+        enddo
       enddo
 
 !  M,N factors outside the boundaries
       do j=1,Mm
-         pm(0,j) = pm(1,j)
-         pn(0,j) = pn(1,j)
-         pm(L,j) = pm(Lm,j)
-         pn(L,j) = pn(Lm,j)
+        pm(0,j) = pm(1,j)
+        pn(0,j) = pn(1,j)
+        pm(L,j) = pm(Lm,j)
+        pn(L,j) = pn(Lm,j)
       enddo
       do i=0,L
-         pm(i,0) = pm(i,1)
-         pn(i,0) = pn(i,1)
-         pm(i,M) = pm(i,Mm)
-         pn(i,M) = pn(i,Mm)
+        pm(i,0) = pm(i,1)
+        pn(i,0) = pn(i,1)
+        pm(i,M) = pm(i,Mm)
+        pn(i,M) = pn(i,Mm)
       enddo
 
 !  Compute dndx,dmde
@@ -341,10 +359,10 @@
 
 !  psi points
       do j=1,M
-         do i=1,L
-            xp(i,j) = x(2*i-2,2*j-2)
-            yp(i,j) = y(2*i-2,2*j-2)
-         enddo
+        do i=1,L
+          xp(i,j) = x(2*i-2,2*j-2)
+          yp(i,j) = y(2*i-2,2*j-2)
+        enddo
       enddo
 
       if (pleft1) then
@@ -418,62 +436,62 @@
 
 !  u points
       do j=1,Mm
-         do i=1,L
-            xu(i,j) = x(2*i-2,2*j-1)
-            yu(i,j) = y(2*i-2,2*j-1)
-         enddo
+        do i=1,L
+          xu(i,j) = x(2*i-2,2*j-1)
+          yu(i,j) = y(2*i-2,2*j-1)
+        enddo
       enddo
       do i=1,L
-         xu(i,0) = 2*xp(i,1) - xu(i,1)
-         xu(i,M) = 2*xp(i,M) - xu(i,Mm)
-         yu(i,0) = 2*yp(i,1) - yu(i,1)
-         yu(i,M) = 2*yp(i,M) - yu(i,Mm)
+        xu(i,0) = 2*xp(i,1) - xu(i,1)
+        xu(i,M) = 2*xp(i,M) - xu(i,Mm)
+        yu(i,0) = 2*yp(i,1) - yu(i,1)
+        yu(i,M) = 2*yp(i,M) - yu(i,Mm)
       enddo
 
 !  vpoints
       do j=1,M
-         do i=1,Lm
-            xv(i,j) = x(2*i-1,2*j-2)
-            yv(i,j) = y(2*i-1,2*j-2)
-         enddo
+        do i=1,Lm
+          xv(i,j) = x(2*i-1,2*j-2)
+          yv(i,j) = y(2*i-1,2*j-2)
+        enddo
       enddo
       do j=1,M
-         xv(0,j) = 2*xp(1,j) - xv(1,j)
-         xv(L,j) = 2*xp(L,j) - xv(Lm,j)
-         yv(0,j) = 2*yp(1,j) - yv(1,j)
-         yv(L,j) = 2*yp(L,j) - yv(Lm,j)
+        xv(0,j) = 2*xp(1,j) - xv(1,j)
+        xv(L,j) = 2*xp(L,j) - xv(Lm,j)
+        yv(0,j) = 2*yp(1,j) - yv(1,j)
+        yv(L,j) = 2*yp(L,j) - yv(Lm,j)
       enddo
 
 !  rho points
       do j=1,Mm
-         do i=1,Lm
-            xr(i,j) = x(2*i-1,2*j-1)
-            yr(i,j) = y(2*i-1,2*j-1)
-         enddo
+        do i=1,Lm
+          xr(i,j) = x(2*i-1,2*j-1)
+          yr(i,j) = y(2*i-1,2*j-1)
+        enddo
       enddo
       do j=1,Mm
-         xr(L,j) = 2*xu(L,j) - xr(Lm,j)
-         xr(0,j) = 2*xu(1,j) - xr(1,j)
-         yr(L,j) = 2*yu(L,j) - yr(Lm,j)
-         yr(0,j) = 2*yu(1,j) - yr(1,j)
+        xr(L,j) = 2*xu(L,j) - xr(Lm,j)
+        xr(0,j) = 2*xu(1,j) - xr(1,j)
+        yr(L,j) = 2*yu(L,j) - yr(Lm,j)
+        yr(0,j) = 2*yu(1,j) - yr(1,j)
       enddo
       do i=0,L
-         xr(i,M) = 2*xv(i,M) - xr(i,Mm)
-         yr(i,M) = 2*yv(i,M) - yr(i,Mm)
-         xr(i,0) = 2*xv(i,1) - xr(i,1)
-         yr(i,0) = 2*yv(i,1) - yr(i,1)
+        xr(i,M) = 2*xv(i,M) - xr(i,Mm)
+        yr(i,M) = 2*yv(i,M) - yr(i,Mm)
+        xr(i,0) = 2*xv(i,1) - xr(i,1)
+        yr(i,0) = 2*yv(i,1) - yr(i,1)
       enddo
 
 !  Diagnostics:
 !  Compute area of domain from m,n factors
       area = 0.
       do j = 1,Mm
-         do i = 1,Lm
-            area = area + 1./(pm(i,j)*pn(i,j))
-         enddo
+        do i = 1,Lm
+          area = area + 1./(pm(i,j)*pn(i,j))
+        enddo
       enddo
       write(6,130)area
-  130 format(5x,'area         ',g10.4)
+  130 format(5x,'area         ',g11.4)
 
 !  Check orthogonality by evaluating dx/dxi*dx/deta+dy/dxi*dy/deta
 !  everywhere.  Normalize with respect to local grid cell area.
@@ -503,7 +521,6 @@
 #else
       call exit(0)
 #endif  /* NO_EXIT */
-  140 call crash('grid: error while outputing solution', 0)
       end
 
 ! *******************************************************************
@@ -588,81 +605,6 @@
       end
 
 ! *******************************************************************
-! subroutine factor:
-!	factors grid size to return the coefficients needed
-!	by mud2.
-!
-! John D. McCalpin	(mccalpin@perelandra.cms.udel.edu)
-! Mon Apr  1 12:13:44 EST 1991
-!
-! Here is a short test code:
-! 	write (*,'(a,$)') 'Enter NX, NY : '
-!	read (*,*) nx,ny
-!	call factor (nx,ny,nxl,nyl,npow2x,npow2y)
-!	write (*,*) nxl,nyl,npow2x,npow2y
-!	end
-!--------------------------------------------------------------
-
-      subroutine factor (nx,ny,nxl,nyl,ix,iy)
-!	-- input args --
-      integer                nx,ny
-!	-- output args --
-      integer                nxl,nyl,ix,iy
-      integer                n2facts
-
-! get number of factors of 2 in nx and ny and correct to make
-! sure remaining coefficient is greater than 1
-
-      ix = n2facts(nx)
-      if (ix .lt. 0) then
-         call crash('BAD NX IN FACTOR2', 1)
-      end if
-      if (nx/2**ix.eq.1) ix = ix-1
-      iy = n2facts(ny)
-      if (iy .lt. 0) then
-         call crash('BAD NY IN FACTOR2', 1)
-      end if
-      if (ny/2**iy.eq.1) iy = iy-1
-
-! now nxl and nyl are guaranteed to be consistent
-! with respect to npow2
-
-      nxl = nx/2**ix
-      nyl = ny/2**iy
-
-      return
-      end
-
-!
-! integer function n2facts:
-!	returns the number of 2's in the prime factorization
-!	of a number
-!
-      integer function n2facts(input)
-      integer input
-      integer n, npow2, i
-
-      if (input.lt.0) goto 110
-
-      n = input
-      npow2 = 0
-      do 100 i=1,64
-         if (mod(n,2).eq.0) then
-            npow2 = npow2+1
-            n = n/2
-         else
-            goto 120
-         endif
-  100 continue
-
-! error return: n<0 or n>2**64 : the latter should not be possible!
-  110 npow2 = -1
-
-  120 n2facts = npow2
-      return
-      end
-
-! *******************************************************************
 
 #if PLOTS
       subroutine gridplot(lbl,area,tarea,errplt)
@@ -681,7 +623,7 @@
       call set(0.,1.,0.,1.,0.,1.,0.,1.,1)
       call plchhq(.5,.98,lbl,.012,0.,0.)
       write(lbl,100)area
-  100 format(' Sum 1/MN=',g10.4)
+  100 format(' Sum 1/MN=',g11.4)
       call plchhq(.5,.03,lbl,.012,0.,0.)
 
 !  Draw the psi points grid (boundaries coincide with channel walls)
@@ -692,15 +634,15 @@
       xl = xhigh-xlow
       el = yhigh-ylow
       if (xl .ge. el) then
-         x1 = 0.05
-         x2 = 0.95
-         y1 = -.45*el/xl + .5
-         y2 = y1 + el/xl*.9
+        x1 = 0.05
+        x2 = 0.95
+        y1 = -.45*el/xl + .5
+        y2 = y1 + el/xl*.9
       else
-         y1 = 0.05
-         y2 = 0.95
-         x1 = -.45*xl/el + .5
-         x2 = x1 + xl/el*.9
+        y1 = 0.05
+        y2 = 0.95
+        x1 = -.45*xl/el + .5
+        x2 = x1 + xl/el*.9
       end if
       call set(x1,x2,y1,y2,xlow,xhigh,ylow,yhigh,1)
 #if DBLEPREC
@@ -718,16 +660,16 @@
       enddo
 #else
       do j = 1,M
-         call frstpt(xp(1,j),yp(1,j))
-         do i = 2,L
-            call vector(xp(i,j),yp(i,j))
-         enddo
+        call frstpt(xp(1,j),yp(1,j))
+        do i = 2,L
+          call vector(xp(i,j),yp(i,j))
+        enddo
       enddo
       do i = 1,L
-         call frstpt(xp(i,1),yp(i,1))
-         do j = 2,M
-            call vector(xp(i,j),yp(i,j))
-         enddo
+        call frstpt(xp(i,1),yp(i,1))
+        do j = 2,M
+          call vector(xp(i,j),yp(i,j))
+        enddo
       enddo
 #endif  /* DBLEPREC */
       call frame
@@ -738,9 +680,9 @@
       call set(0.,1.,0.,1.,0.,1.,0.,1.,1)
       call plchhq(.5,.98,lbls(1:2),.012,0.,0.)
       do j=0,M
-         do i=0,L
-            tmp(i,j) = 1/pm(i,j)
-         enddo
+        do i=0,L
+          tmp(i,j) = 1/pm(i,j)
+        enddo
       enddo
       dxmin = vmax(pm,Lp*Mp)
       dxmin = 1/dxmin
@@ -755,9 +697,9 @@
       call set(0.,1.,0.,1.,0.,1.,0.,1.,1)
       call plchhq(.5,.98,lbls(1:2),.012,0.,0.)
       do j=0,M
-         do i=0,L
-            tmp(i,j) = 1/pn(i,j)
-         enddo
+        do i=0,L
+          tmp(i,j) = 1/pn(i,j)
+        enddo
       enddo
       dxmin = vmax(pn,Lp*Mp)
       dxmin = 1/dxmin
@@ -770,9 +712,9 @@
 
 !  plot error in grid
       do j=1,Mm
-         do i=1,Lm
-            tmp2(i,j) = errplt(i,j)
-         enddo
+        do i=1,Lm
+          tmp2(i,j) = errplt(i,j)
+        enddo
       enddo
       write(lbls,130)
   130 format('Error')
@@ -798,24 +740,24 @@
 !  Read x,y data points describing boundary 1
       read(5,*) nb1pts
       if (nb1pts .gt. IBIG) then
-         call crash('readbndy: Need to make IBIG at least', nb1pts)
+        call crash('readbndy: Need to make IBIG at least', nb1pts)
       end if
       do i=1,nb1pts
-         read(5,*) x1spl(i),y1spl(i)
+        read(5,*) x1spl(i),y1spl(i)
       enddo
       if (.not. even1) then
-         do i=1,nb1pts
-            s1spl(i) = (i-1.)/(nb1pts-1.)
-         enddo
+        do i=1,nb1pts
+          s1spl(i) = (i-1.)/(nb1pts-1.)
+        enddo
       else
-         arcs(1) = 0
-         do i = 2,nb1pts
-            arcs(i) = arcs(i-1) + sqrt((x1spl(i)-x1spl(i-1))**2 + &
+        arcs(1) = 0
+        do i = 2,nb1pts
+          arcs(i) = arcs(i-1) + sqrt((x1spl(i)-x1spl(i-1))**2 + &
      &        (y1spl(i)-y1spl(i-1))**2)
-         enddo
-         do i=1,nb1pts
-            s1spl(i) = arcs(i)/arcs(nb1pts)
-         enddo
+        enddo
+        do i=1,nb1pts
+          s1spl(i) = arcs(i)/arcs(nb1pts)
+        enddo
       end if
 
       call spline(s1spl,x1spl,nb1pts,huge,huge,b1spl)
@@ -824,24 +766,24 @@
 !  Read x,y data points describing boundary 2
       read(5,*) nb2pts
       if (nb2pts .gt. IBIG) then
-         call crash('readbndy: Need to make IBIG at least', nb2pts)
+        call crash('readbndy: Need to make IBIG at least', nb2pts)
       end if
       do i=1,nb2pts
-         read(5,*) x2spl(i),y2spl(i)
+        read(5,*) x2spl(i),y2spl(i)
       enddo
       if (.not. even2) then
-         do i=1,nb2pts
-            s2spl(i) = (i-1.)/(nb2pts-1.)
-         enddo
+        do i=1,nb2pts
+          s2spl(i) = (i-1.)/(nb2pts-1.)
+        enddo
       else
-         arcs(1) = 0
-         do i = 2,nb2pts
-            arcs(i) = arcs(i-1) + sqrt((x2spl(i)-x2spl(i-1))**2 + &
+        arcs(1) = 0
+        do i = 2,nb2pts
+          arcs(i) = arcs(i-1) + sqrt((x2spl(i)-x2spl(i-1))**2 + &
      &        (y2spl(i)-y2spl(i-1))**2)
-         enddo
-         do i=1,nb2pts
-            s2spl(i) = arcs(i)/arcs(nb2pts)
-         enddo
+        enddo
+        do i=1,nb2pts
+          s2spl(i) = arcs(i)/arcs(nb2pts)
+        enddo
       end if
 
       call spline(s2spl,x2spl,nb2pts,huge,huge,b2spl)
@@ -856,18 +798,18 @@
       read(5,*) x3spl(i),y3spl(i)
       enddo
       if (.not. even3) then
-         do i=1,nb3pts
-            s3spl(i) = (i-1.)/(nb3pts-1.)
-         enddo
+        do i=1,nb3pts
+          s3spl(i) = (i-1.)/(nb3pts-1.)
+        enddo
       else
-         arcs(1) = 0
-         do i = 2,nb3pts
-            arcs(i) = arcs(i-1) + sqrt((x3spl(i)-x3spl(i-1))**2 + &
+        arcs(1) = 0
+        do i = 2,nb3pts
+          arcs(i) = arcs(i-1) + sqrt((x3spl(i)-x3spl(i-1))**2 + &
      &        (y3spl(i)-y3spl(i-1))**2)
-         enddo
-         do i=1,nb3pts
-            s3spl(i) = arcs(i)/arcs(nb3pts)
-         enddo
+        enddo
+        do i=1,nb3pts
+          s3spl(i) = arcs(i)/arcs(nb3pts)
+        enddo
       end if
 
       call spline(s3spl,x3spl,nb3pts,huge,huge,b3spl)
@@ -876,24 +818,24 @@
 !  Read x,y data points describing boundary 4
       read(5,*) nb4pts
       if (nb4pts .gt. IBIG) then
-         call crash('readbndy: Need to make IBIG at least', nb4pts)
+        call crash('readbndy: Need to make IBIG at least', nb4pts)
       end if
       do i=1,nb4pts
-         read(5,*) x4spl(i),y4spl(i)
+        read(5,*) x4spl(i),y4spl(i)
       enddo
       if (.not. even4) then
-         do i=1,nb4pts
-            s4spl(i) = (i-1.)/(nb4pts-1.)
-         enddo
+        do i=1,nb4pts
+          s4spl(i) = (i-1.)/(nb4pts-1.)
+        enddo
       else
-         arcs(1) = 0
-         do i = 2,nb4pts
-            arcs(i) = arcs(i-1) + sqrt((x4spl(i)-x4spl(i-1))**2 + &
+        arcs(1) = 0
+        do i = 2,nb4pts
+          arcs(i) = arcs(i-1) + sqrt((x4spl(i)-x4spl(i-1))**2 + &
      &        (y4spl(i)-y4spl(i-1))**2)
-         enddo
-         do i=1,nb4pts
-            s4spl(i) = arcs(i)/arcs(nb4pts)
-         enddo
+        enddo
+        do i=1,nb4pts
+          s4spl(i) = arcs(i)/arcs(nb4pts)
+        enddo
       end if
 
       call spline(s4spl,x4spl,nb4pts,huge,huge,b4spl)
@@ -904,8 +846,8 @@
 ! *******************************************************************
 
 #if DCOMPLEX
-      subroutine rect(z,N,N1,N2,N3,N4)
-      integer    N, N1, N2, N3, N4
+      subroutine rect(z,N,N1,N2,N3,N4,err)
+      integer    N, N1, N2, N3, N4, err
 
 !     This subroutine is taken directly from Ives, D.C. and
 !     R.M. Zacharias "Conformal Mapping and Orthogonal Grid Generation"
@@ -913,7 +855,7 @@
 
       complex*16 z(N), z0, zd
       integer    BIG
-      parameter (BIG=3000)
+      parameter (BIG=8000)
       double precision r(BIG), t(BIG), pi, alpha, pwr, pmin, &
      &           pmax, tp
       integer    i, j, k, im, ip
@@ -948,7 +890,8 @@
                t(j) = t(j)+pi+pi
   120       continue
 !        pause ' warning - tracking error '
-            call crash('rect: tracking error', 0)
+            err = 1
+            return
   130       tp = t(j)
             pmax = dmax1(pmax,t(j)*pwr)
             pmin = dmin1(pmin,t(j)*pwr)
@@ -973,8 +916,8 @@
 #else
 ! *******************************************************************
 
-      subroutine rects(z,N,N1,N2,N3,N4)
-      integer    N, N1, N2, N3, N4
+      subroutine rects(z,N,N1,N2,N3,N4,err)
+      integer    N, N1, N2, N3, N4, err
 
 !     Single precision version of subroutine rect from Ives,D.C. and
 !     R.M.Zacharias "Conformal Mapping and Orthogonal Grid Generation"
@@ -1016,7 +959,8 @@
                t(j) = t(j)+pi+pi
   120       continue
 !        pause ' warning - tracking error '
-            call crash('rects: tracking error', 0)
+            err = 1
+            return
   130       tp = t(j)
             pmax = max(pmax,t(j)*pwr)
             pmin = min(pmin,t(j)*pwr)
@@ -1054,29 +998,29 @@
       integer    i, k
 
       if (yp1 .gt. .99e30) then
-         y2(1)=0.
-         u(1)=0.
+        y2(1)=0.
+        u(1)=0.
       else
-         y2(1)=-0.5
-         u(1)=(3./(x(2)-x(1)))*((y(2)-y(1))/(x(2)-x(1))-yp1)
+        y2(1)=-0.5
+        u(1)=(3./(x(2)-x(1)))*((y(2)-y(1))/(x(2)-x(1))-yp1)
       endif
       do i=2,NN-1
-         sig=(x(i)-x(i-1))/(x(i+1)-x(i-1))
-         p=sig*y2(i-1)+2.
-         y2(i)=(sig-1.)/p
-         u(i)=(6.*((y(i+1)-y(i))/(x(i+1)-x(i))-(y(i)-y(i-1)) &
+        sig=(x(i)-x(i-1))/(x(i+1)-x(i-1))
+        p=sig*y2(i-1)+2.
+        y2(i)=(sig-1.)/p
+        u(i)=(6.*((y(i+1)-y(i))/(x(i+1)-x(i))-(y(i)-y(i-1)) &
      &        /(x(i)-x(i-1)))/(x(i+1)-x(i-1))-sig*u(i-1))/p
       enddo
       if (ypn .gt. .99e30) then
-         qn=0.
-         un=0.
+        qn=0.
+        un=0.
       else
-         qn=0.5
-         un=(3./(x(NN)-x(NN-1)))*(ypn-(y(NN)-y(NN-1))/(x(NN)-x(NN-1)))
+        qn=0.5
+        un=(3./(x(NN)-x(NN-1)))*(ypn-(y(NN)-y(NN-1))/(x(NN)-x(NN-1)))
       endif
       y2(NN)=(un-qn*u(NN-1))/(qn*y2(NN-1)+1.)
       do k=NN-1,1,-1
-         y2(k)=y2(k)*y2(k+1)+u(k)
+        y2(k)=y2(k)*y2(k+1)+u(k)
       enddo
       return
       end
@@ -1092,13 +1036,13 @@
       klo=1
       khi=N
   100 if (khi-klo.gt.1) then
-         k=(khi+klo)/2
-         if(xa(k).gt.x)then
-            khi=k
-         else
-            klo=k
-         endif
-         goto 100
+        k=(khi+klo)/2
+        if(xa(k).gt.x)then
+          khi=k
+        else
+          klo=k
+        endif
+        goto 100
       endif
       h=xa(khi)-xa(klo)
       if (h.eq.0.) call crash('splint: bad xa input', 0)

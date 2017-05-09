@@ -22,7 +22,8 @@
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional -DLINUX
             CLEAN := Bin/cpp_clean
-               LD := ncargf90
+#               LD := ncargf90
+               LD := ${FC}
           LDFLAGS := 
                AR := ar
           ARFLAGS := r
@@ -38,11 +39,11 @@
 # Library locations, can be overridden by environment variables.
 #
 
-    NETCDF_INCDIR ?= /opt/pgi/netcdf/include
-    NETCDF_LIBDIR ?= /opt/pgi/netcdf/lib
+        NC_CONFIG ?= nc-config
+    NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
+             LIBS := $(shell $(NC_CONFIG) --flibs)
 
          CPPFLAGS += -I$(NETCDF_INCDIR)
-             LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
 
 ifdef ARPACK
     ARPACK_LIBDIR ?= /opt/pgisoft/ARPACK
@@ -61,7 +62,8 @@ endif
 ifdef DEBUG
            FFLAGS += -g
 else
-           FFLAGS += -u -Bstatic -fastsse -Mipa=fast
+#           FFLAGS += -u -Bstatic -fastsse -Mipa=fast
+           FFLAGS += -O2
 endif
 
        clean_list += ifc* work.pc*

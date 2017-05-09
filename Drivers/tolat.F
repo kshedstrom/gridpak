@@ -55,6 +55,7 @@
       call maptrn(PLAT+.5,PLONG,U2,V2)
       call maptrn(PLAT-.5,PLONG,U1,V1)
       udeg = sqrt((U2-U1)*(U2-U1) + (V2-V1)*(V2-V1))
+      if (JPRJ == 'ST') udeg = udeg*2.0
 
 !  Calculate the lat,long of the psi points
 

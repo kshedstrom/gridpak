@@ -2,7 +2,7 @@
 #                                                                       :::
 #  ROMS/TOMS Gridpak Code Master Makefile                              :::
 #                                                                       :::
-#  This makefile is designed to work only with GNU Make version 3.77 or :::
+#  This Makefile is designed to work only with GNU Make version 3.77 or :::
 #  higher. It can be used in any architecture provided that there is a  :::
 #  machine/compiler rules file in the  "Compilers"  subdirectory.  You  :::
 #  may need to modify the rules file to specify the  correct path  for  :::
@@ -24,10 +24,10 @@
 #::::::::::::::::::::::::::::::::::::::::::::::::::::: Hernan G. Arango :::
 
 
-NEED_VERSION := 3.80 3.81
-$(if $(filter $(MAKE_VERSION),$(NEED_VERSION)),,        \
- $(error This makefile requires one of GNU make version $(NEED_VERSION).))
-
+ifneq (3.80,$(firstword $(sort $(MAKE_VERSION) 3.80)))
+ $(error This Makefile requires GNU make version 3.80 or higher. \
+  Your current version is: $(MAKE_VERSION))
+endif
 
 #--------------------------------------------------------------------------
 #  Initialize some things.
@@ -35,6 +35,12 @@ $(if $(filter $(MAKE_VERSION),$(NEED_VERSION)),,        \
 
   sources    := 
   libraries  :=
+  includes   := Include
+# includes   := Include_Is
+# includes   := Include_Ben
+# includes   := Include_S_Africa
+# includes   := Include_supercritical
+
 
 #==========================================================================
 #  Start of user-defined options. Modify macro variables: on is TRUE while
@@ -43,21 +49,7 @@ $(if $(filter $(MAKE_VERSION),$(NEED_VERSION)),,        \
 #
 #  Activate debugging compiler options:
 
-       DEBUG :=
-
-#  If parallel applications, use at most one of these definitions
-#  (leave both definitions blank in serial applications):
-
-         MPI :=
-      OpenMP :=
-
-#  If applicable, compile with the ARPACK library (GST analysis):
-
-      ARPACK :=
-
-#  If applicable, activate 64-bit compilation:
-
-       LARGE :=
+       DEBUG := on
 
 #--------------------------------------------------------------------------
 #  We are going to include a file with all the settings that depend on
@@ -67,15 +59,9 @@ $(if $(filter $(MAKE_VERSION),$(NEED_VERSION)),,        \
 #
 #  Operating System        Compiler(s)
 #
-#     AIX:                    xlf
-#     ALPHA:                  f90
 #     CYGWIN:                 g95, df
 #     Darwin:                 f90
-#     IRIX:                   f90
-#     Linux:                  ifc, ifort, pgi, path, g95, mpif90
-#     SunOS:                  f95
-#     UNICOS-mp:              ftn
-#     SunOS/Linux:            ftn (Cray cross-compiler)
+#     Linux:                  ifort, pgi, path, g95, mpif90
 #
 #  Feel free to send us additional rule files to include! Also, be sure
 #  to check the appropriate file to make sure it has the right paths to
@@ -187,27 +173,25 @@ define one-c-compile-rule
 endef
 
 #--------------------------------------------------------------------------
-#  Set ROMS/TOMS executable file name.
+#  Set executable file names.
 #--------------------------------------------------------------------------
 
 COAST := $(BINDIR)/coast
 GRID := $(BINDIR)/grid
-SQGRID := $(BINDIR)/sqgrid
 TOLAT := $(BINDIR)/tolat
 BATHTUB := $(BINDIR)/bathtub
 BATHSUDS := $(BINDIR)/bathsuds
 BATHSOAP := $(BINDIR)/bathsoap
 SPHERE := $(BINDIR)/sphere
-ifdef DEBUG
-   COAST := $(BINDIR)/coastG
-   GRID := $(BINDIR)/gridG
-   SQGRID := $(BINDIR)/sqgridG
-   TOLAT := $(BINDIR)/tolatG
-   BATHTUB := $(BINDIR)/bathtubG
-   BATHSUDS := $(BINDIR)/bathsudsG
-   BATHSOAP := $(BINDIR)/bathsoapG
-   SPHERE := $(BINDIR)/sphereG
-endif
+#ifdef DEBUG
+#   COAST := $(BINDIR)/coastG
+#   GRID := $(BINDIR)/gridG
+#   TOLAT := $(BINDIR)/tolatG
+#   BATHTUB := $(BINDIR)/bathtubG
+#   BATHSUDS := $(BINDIR)/bathsudsG
+#   BATHSOAP := $(BINDIR)/bathsoapG
+#   SPHERE := $(BINDIR)/sphereG
+#endif
 
 #--------------------------------------------------------------------------
 #  Set name of module files for netCDF F90 interface. On some platforms
@@ -226,7 +210,6 @@ TYPESIZES_MODFILE := typesizes.mod
 
 OS := $(shell uname -s | sed 's/[\/ ]/-/g')
 OS := $(patsubst CYGWIN_%,CYGWIN,$(OS))
-OS := $(patsubst sn%,UNICOS-sn,$(OS))
 
 CPU := $(shell uname -m | sed 's/[\/ ]/-/g')
 
@@ -258,8 +241,6 @@ all: $(SCRATCH_DIR) $(SCRATCH_DIR)/MakeDepend $(COAST) $(GRID) $(SQGRID) \
 
 modules  := Utility Drivers
 
-includes := Include
-
 vpath %.F $(modules)
 vpath %.h $(includes)
 vpath %.f90 $(SCRATCH_DIR)
@@ -289,7 +270,7 @@ $(SCRATCH_DIR)/$(NETCDF_MODFILE): | $(SCRATCH_DIR)
 $(SCRATCH_DIR)/$(TYPESIZES_MODFILE): | $(SCRATCH_DIR)
 	cp -f $(NETCDF_INCDIR)/$(TYPESIZES_MODFILE) $(SCRATCH_DIR)
 
-$(SCRATCH_DIR)/MakeDepend: makefile \
+$(SCRATCH_DIR)/MakeDepend: Makefile \
                            $(SCRATCH_DIR)/$(NETCDF_MODFILE) \
                            $(SCRATCH_DIR)/$(TYPESIZES_MODFILE) \
                            | $(SCRATCH_DIR)
@@ -332,7 +313,7 @@ clean:
 
 #--------------------------------------------------------------------------
 #  A handy debugging target. This will allow to print the value of any
-#  makefile defined macro (see http://tinyurl.com/8ax3j). For example,
+#  Makefile defined macro (see http://tinyurl.com/8ax3j). For example,
 #  to find the value of CPPFLAGS execute:
 #
 #        gmake print-CPPFLAGS
