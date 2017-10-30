@@ -245,6 +245,7 @@
       endif
       call frame
 
+#ifndef NEGATIVE
       write (ltit,180)
   180 format ('r-Value')
 
@@ -287,6 +288,7 @@
 #endif  /* DRAW_COASTS */
       endif
       call frame
+#endif
 
       return
       end

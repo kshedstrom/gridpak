@@ -181,8 +181,8 @@
         endif
 #endif  /* KEEP_SHALLOW */
 
-        call shapiro(h,Lp,Mp,2,wrk1,wrk2)
-!        call ploth(gridid(1:40),colour,grover)
+        call shapiro(h,Lp,Mp,2,wrk1,wrk2,mask_rho)
+!       call ploth(gridid(1:40),colour,grover)
 !  zero slope on h at boundaries
         do i=1,Lm
           h(i,0) = h(i,1)
@@ -206,6 +206,7 @@
           enddo
         enddo
         print *,k,' rmax = ',rmax,' at (i,j): ',ii,jj
+        print *,'depths: ', h(ii,jj), h(ii-1,jj), h(ii,jj-1)
 
  120  continue
 
@@ -245,9 +246,10 @@
 
 ! ****************************************************************
 
-      subroutine shapiro(u,Lp,Mp,N,tmp,tmp2)
+      subroutine shapiro(u,Lp,Mp,N,tmp,tmp2,mask)
       integer    Lp, Mp, N
       BIGREAL    u(0:Lp-1,0:Mp-1)
+      BIGREAL    mask(0:Lp-1,0:Mp-1)
       BIGREAL    tmp(0:Lp-1,0:Mp-1), tmp2(0:Lp-1,0:Mp-1)
 
 ! ****************************************************************
@@ -288,10 +290,20 @@
 
 !  Do the first y pass to initialize the temporary array
 
-      do 100 i=0,L
-      do 100 j=1,M-1
-        tmp(i,j) = 0.25 * (u(i,j-1) + u(i,j+1) - 2*u(i,j))
-  100 continue
+      do i=0,L
+        do j=1,M-1
+          if (mask(i,j) == 0 .or.                                       &
+     &                (mask(i,j-1)==0 .and. mask(i,j+1)==0)) then
+            tmp(i,j) = 0
+          else if (mask(i,j-1) == 0 .and. mask(i,j+1) == 1) then
+            tmp(i,j) = 0.25 * (u(i,j+1) - u(i,j))
+          else if (mask(i,j-1) == 1 .and. mask(i,j+1) == 0) then
+            tmp(i,j) = 0.25 * (u(i,j-1) - u(i,j))
+          else
+            tmp(i,j) = 0.25 * (u(i,j-1) + u(i,j+1) - 2*u(i,j))
+          end if
+        end do
+      end do
 
 !  Other passes in the y direction.
 
@@ -316,10 +328,20 @@
 
 !  Initialize tmp to filter in the x direction.
 
-      do 140 j=0,M
-      do 140 i=1,L-1
-        tmp(i,j) = 0.25 * (u(i-1,j) + u(i+1,j) - 2*u(i,j))
-  140 continue
+      do j=0,M
+        do i=1,L-1
+          if (mask(i,j) == 0 .or.                                       &
+     &                (mask(i-1,j)==0 .and. mask(i+1,j)==0)) then
+            tmp(i,j) = 0
+          else if (mask(i-1,j) == 0 .and. mask(i+1,j) == 1) then
+            tmp(i,j) = 0.25 * (u(i+1,j) - u(i,j))
+          else if (mask(i-1,j) == 1 .and. mask(i+1,j) == 0) then
+            tmp(i,j) = 0.25 * (u(i-1,j) - u(i,j))
+          else
+            tmp(i,j) = 0.25 * (u(i-1,j) + u(i+1,j) - 2*u(i,j))
+          end if
+        end do
+      end do
 
 !  Other x passes
 
@@ -349,7 +371,7 @@
       BIGREAL function rvwgtx(i,j)
       integer     i, j
       BIGREAL     rv0, rvwscl,rvwmin,  rvwmax, dhdxx1, dhdxx2, dhdxx,   &
-     &            rvwavg, rvwrng
+     &            rvwavg, rvwrng, h1, h2
 
 #include "bathy.h"
 
@@ -360,14 +382,17 @@
       rvwavg = 0.5*(rvwmin+rvwmax)
       rvwrng = 0.5*(rvwmax-rvwmin)
 
-      dhdxx1 = abs((h(i,j) - h(i-1,j)) / (h(i,j) + h(i-1,j)))           &
+      h1 = max(5.0,h(i,j))
+      h2 = max(5.0,h(i-1,j))
+      dhdxx1 = abs((h1 - h2) / (h1 + h2))           &
      &         * mask_rho(i,j) * mask_rho(i-1,j)
-      dhdxx2 = abs((h(i+1,j) - h(i,j)) / (h(i,j) + h(i+1,j)))           &
+      h2 = max(5.0,h(i+1,j))
+      dhdxx2 = abs((h1 - h2) / (h1 + h2))           &
      &         * mask_rho(i,j) * mask_rho(i+1,j)
       dhdxx  = max(dhdxx1,dhdxx2)
 
       rvwgtx = rvwavg + rvwrng*(tanh((dhdxx-rv0)/rvwscl))
-!     if (i .ge. 60) rvwgtx = max(rvwgtx,1.6)
+      if (h(i,j) .le. 5.0) rvwgtx = 0.0
       return
       end
 
@@ -375,7 +400,7 @@
 
       BIGREAL function rvwgty(i,j)
       integer     i, j
-      BIGREAL     rv0, rvwscl,rvwmin,  rvwmax,                          &
+      BIGREAL     rv0, rvwscl,rvwmin,  rvwmax, h1, h2,                  &
      &            rvwavg, rvwrng, dhdyy1, dhdyy2, dhdyy
 
 #include "bathy.h"
@@ -386,14 +411,17 @@
       rvwmax = 1.2
       rvwavg = 0.5*(rvwmin+rvwmax)
       rvwrng = 0.5*(rvwmax-rvwmin)
-      dhdyy1 = abs((h(i,j) - h(i,j-1)) / (h(i,j) + h(i,j-1)))           &
+      h1 = max(5.0,h(i,j))
+      h2 = max(5.0,h(i,j-1))
+      dhdyy1 = abs((h1 - h2) / (h1 + h2))           &
      &         * mask_rho(i,j) * mask_rho(i,j-1)
-      dhdyy2 = abs((h(i,j+1) - h(i,j)) / (h(i,j) + h(i,j+1)))           &
+      h2 = max(5.0,h(i,j+1))
+      dhdyy2 = abs((h1 - h2) / (h1 + h2))           &
      &         * mask_rho(i,j) * mask_rho(i,j+1)
       dhdyy  = max(dhdyy1,dhdyy2)
 
       rvwgty = rvwavg + rvwrng*(tanh((dhdyy-rv0)/rvwscl))
-!     if (i .ge. 60) rvwgty = max(rvwgty,1.6)
+      if (h(i,j) .le. 5.0) rvwgty = 0.0
       return
       end
 
@@ -404,12 +432,16 @@
 
 !     calculate the SPEM r-value
 #include "bathy.h"
-      BIGREAL   dhdxx, dhdyy
+      BIGREAL   dhdxx, dhdyy, h1, h2, h3
 
-      dhdxx  = abs((h(i,j) - h(i-1,j)) / (h(i,j) + h(i-1,j)))           &
+      h1 = max(5.0,h(i,j))
+      h2 = max(5.0,h(i-1,j))
+      h3 = max(5.0,h(i,j-1))
+      dhdxx  = abs((h1 - h2) / (h1 + h2))           &
      &         * mask_rho(i,j) * mask_rho(i-1,j)
-      dhdyy  = abs((h(i,j) - h(i,j-1)) / (h(i,j) + h(i,j-1)))           &
+      dhdyy  = abs((h1 - h3) / (h1 + h3))           &
      &         * mask_rho(i,j) * mask_rho(i,j-1)
       rv     = max(dhdxx,dhdyy)
+      if (h(i,j) .le. 5.0) rv = 0.0
       return
       end
