@@ -24,7 +24,7 @@
          CPPFLAGS := -P -traditional
             CLEAN := Bin/cpp_clean
                LD := ncargf90
-          LDFLAGS :=
+          LDFLAGS := -L/usr/local/pkg/vis/cairo/1.14.10-foss-2016b/lib
                AR := ar
           ARFLAGS := -r
 	    MKDIR := mkdir -p

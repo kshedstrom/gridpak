@@ -1,0 +1,51 @@
+Warning! This thing does not depend on the NCARG library any more, but
+the order of operations is not at all obvious. Do up through bathtub,
+and optaining the merged bathymetry. Then the Sasha operations, then
+sphere, then editmask, then the bathy smoothing, then sphere again.
+
+For Chukchi 3 hraw:
+
+1, 2: Ibcao 3 and Ibcao 3 clipped.
+3, 4: ARDEM 2 and ARDEM 2 clipped.
+5: combo of 2 and 4.
+6: 11 passes of bathsuds.
+7: 1 pass of bathsoap
+
+For Chukchi 4 hraw:
+
+1, 2: ARDEM 2 and ARDEM 2 clipped.
+3, 4: Ibcao 3 and Ibcao 3 clipped.
+5: combo of 2 and 4.
+6: 9 passes of bathsuds.
+7: 1 pass of bathsoap
+
+For Chukchi 5 hraw:
+
+1, 2: ARDEM 2 and ARDEM 2 clipped.
+3, 4: Ibcao 3 and Ibcao 3 clipped.
+5: combo of 2 and 4.
+6: 5 passes of bathsuds.
+7: 1 pass of bathsoap
+
+I ran Sasha's
+
+        gshhs_to_roms_mask grid_Chukchi_5.nc
+	copymask mask.nc grid_Chukchi_5.nc
+	single_connect_cb 200 200 grid_Chukchi_5.nc
+
+Note that single_connect keeps one-grid bays while single_connect_cb
+closes the one-grid bays (compile-time switch). Sasha's tools only
+update the mask_rho. Ideally, ROMS would just read that and compute
+consistent mask_u, mask_v but that's not how it goes today, though ROMS
+does compute mask_psi.
+
+Note 2 on single_connect: It was hanging for me, not even giving
+consistent output, but consistently not finishing. I started up inside
+totalview and it ran like a charm in no time at all:
+
+   mpirun -tv -np 1 ~/bin/single_connect_cb 200 200 grid_Chukchi_5.nc
+
+In fact, this works great without the -tv switch.
+
+Note 3: Turn a bay into a lake and single_connect will do the rest of
+the filling in. A shortcut!

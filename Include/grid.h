@@ -1,7 +1,7 @@
 #include "griddefs.h"
 #include "bathy.h"
-      integer         ITMAX, IBIG
-      parameter (     ITMAX=8, IBIG=400    )
+      integer         IBIG
+      parameter (     IBIG=400    )
 !  ITMAX is the number of iterations to perform
 !  IBIG is the largest number of points to be read in for one
 !  boundary.

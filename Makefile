@@ -33,7 +33,7 @@ endif
 #  Initialize some things.
 #--------------------------------------------------------------------------
 
-  sources    := 
+  sources    :=
   libraries  :=
   includes   := Include
 # includes   := Include_Is
@@ -178,7 +178,7 @@ endef
 
 COAST := $(BINDIR)/coast
 GRID := $(BINDIR)/grid
-TOLAT := $(BINDIR)/tolat
+#TOLAT := $(BINDIR)/tolat
 BATHTUB := $(BINDIR)/bathtub
 BATHSUDS := $(BINDIR)/bathsuds
 BATHSOAP := $(BINDIR)/bathsoap

@@ -24,7 +24,7 @@
 ! #define KEEP_SHALLOW   1
 
 ! for NCAR graphics (3.2 or better) */
-#define PLOTS	     1
+#undef PLOTS
 ! for X windows rather than metafile */
 #undef X_WIN
 
