@@ -1,7 +1,7 @@
 #include "griddefs.h"
 #include "bathy.h"
-      integer         IBIG
-      parameter (     IBIG=4000    )
+      integer         ITMAX, IBIG
+      parameter (     ITMAX=6, IBIG=400    )
 !  ITMAX is the number of iterations to perform
 !  IBIG is the largest number of points to be read in for one
 !  boundary.
@@ -68,8 +68,8 @@
 !  to be used in generating a nested domain.
       logical        subset
       integer        Lwest, Least, Msouth, Mnorth, iout3
-      parameter    ( subset = .false., Lwest = 10, Least = 20, &
-     &               Msouth = 10, Mnorth = 20, iout3 = 15    )
+      parameter    ( subset = .false., Lwest = 14, Least = 27, &
+     &               Msouth = 160, Mnorth = 248, iout3 = 15    )
 
 !  xpots unit numbers
       integer         ipot1, ipot2, ipot3, ipot4

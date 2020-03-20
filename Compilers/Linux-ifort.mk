@@ -22,9 +22,9 @@
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional -DLINUX
             CLEAN := Bin/cpp_clean
-               LD := ncargf90
-#               LD := ifort
-          LDFLAGS := 
+#               LD := ncargf90
+               LD := ifort
+          LDFLAGS :=
                AR := ar
           ARFLAGS := r
 	    MKDIR := mkdir -p
@@ -52,7 +52,7 @@ endif
 
 ifdef MPI
          CPPFLAGS += -DMPI
-             LIBS += -lfmpi-pgi -lmpi-pgi 
+             LIBS += -lfmpi-pgi -lmpi-pgi
 endif
 
 ifdef OpenMP
