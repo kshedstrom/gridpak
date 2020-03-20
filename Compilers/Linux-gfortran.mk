@@ -23,7 +23,7 @@
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional
             CLEAN := Bin/cpp_clean
-               LD := ncargf90
+               LD := gfortran
           LDFLAGS := -L/usr/local/pkg/vis/cairo/1.14.10-foss-2016b/lib
                AR := ar
           ARFLAGS := -r

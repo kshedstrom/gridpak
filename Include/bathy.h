@@ -31,7 +31,11 @@
       common /rmask/  mask_rho, mask_u, mask_v, mask_psi
       BIGREAL         angle(0:L,0:M)
       common /angles/ angle
+#if IBCAO
+      real            depthmin, depthmax
+#else
       integer*2       depthmin, depthmax
+#endif
       common /hmins/  depthmin, depthmax
       integer         spherical
       common /logic/  spherical

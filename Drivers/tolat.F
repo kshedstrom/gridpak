@@ -33,8 +33,9 @@
 
       call get_xy
 #ifndef PLOTS
-      call crash('This program depends on NCAR graphics', 1)
+!     call crash('This program depends on NCAR graphics', 1)
 #endif  /* PLOTS */
+#ifdef PLOTS
       call start_plot
 
 !  Initialize the mapping variables
@@ -234,6 +235,7 @@
         print *,'Latitude range ', minlat, maxlat
         print *,'Longitude range ', minlon, maxlon
       endif
+#endif
 
       call wrt_lat
 

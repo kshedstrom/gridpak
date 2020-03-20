@@ -5,6 +5,7 @@
 
       subroutine drawcoast
 #include "griddefs.h"
+#ifdef PLOTS
       real           lat, lon
 
 !  MAX is maximum number of segments in data file
@@ -46,4 +47,5 @@
 #else
       call exit(1)
 #endif  /* NO_EXIT */
+#endif
       end

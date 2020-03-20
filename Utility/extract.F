@@ -16,7 +16,11 @@
       character*60 fname
       integer      im, jm, stdout, varid
       integer      count(2), start(2)
+#if IBCAO
+      real         topo(im,jm)
+#else
       integer*2    topo(im,jm)
+#endif
       real         c0, c5, c60
       BIGREAL      lat(jm), lon(im)
       parameter (  c0=0.0,c5=5.0,c60=60.0,stdout=6)

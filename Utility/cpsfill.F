@@ -12,6 +12,7 @@
       logical      shift
       integer      K, M, N
 #include "griddefs.h"
+#ifdef PLOTS
       real         zdat(K,*), finc, scalel
 
 !  dimensions of work arrays
@@ -510,5 +511,6 @@
 !     enddo
 !     print *,'ifll', ifll
 
+#endif
       return
       end

@@ -1,4 +1,5 @@
 #include "griddefs.h"
+#ifdef PLOTS
 ! ********************************************************************
 
       subroutine cpmpxy(imap,x,y,fx,fy)
@@ -321,3 +322,4 @@
       return
       end
 
+#endif

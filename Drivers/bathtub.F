@@ -67,9 +67,13 @@
       parameter     ( ILON=721, ILAT=918)
 
 #endif
+#if IBCAO
+      real, allocatable      ::       bathy(:,:)
+#else
       integer*2, allocatable ::       bathy(:,:)
 #if ETOPO5 || ETOPO2 || SRTM30
       integer*2, allocatable ::       bathy2(:,:)
+#endif
 #endif
       BIGREAL         lat(ILAT), lon(ILON)
       common /ll/     lat, lon
@@ -85,7 +89,11 @@
       BIGREAL         depthmxr, depthmnr,                               &
      &                htmp1, htmp2, x1, y1
       BIGREAL         vmin, vmax
+#if IBCAO
+      real            vsimin, vsimax
+#else
       integer*2       vsimin, vsimax
+#endif
       integer         i, j, i1, j1
       BIGREAL         zero, one
       parameter     ( zero=0.d0, one=1.d0  )
@@ -133,9 +141,10 @@
       enddo
 #else
       call extract(lon,lat,bathy,ILON,ILAT)
+      print *, 'ILON, ILAT', ILON, ILAT
 
 !  Longitudes between 0 and 360
-# ifndef ETOPO1
+# if !ETOPO1 && !IBCAO
       do i=1,ILON
         if (lon(i) .lt. 0.) lon(i) = lon(i) + 360.
       enddo
@@ -166,7 +175,7 @@
       maxlat = vmax(lat_rho,Lp*Mp)
       maxlon = vmax(lon_rho,Lp*Mp)
 
-#ifndef ETOPO1
+#if !ETOPO1 && !IBCAO
 #if ETOPO5
       if (minlon .lt. 0.) then
 #endif /* ETOPO5 */
@@ -261,6 +270,7 @@
 #endif
             x1 = lon_rho(i,j) - (alonw + (i1-1.)*DELTA_X)
             y1 = lat_rho(i,j) - (alats + (j1-1.)*DELTA_Y)
+!           print *, 'Interpolating', i, j, i1, j1, x1, y1
             corner(1,1) = bathy(i1,j1)
             corner(1,2) = bathy(i1,j1+1)
             corner(2,1) = bathy(i1+1,j1)
@@ -489,6 +499,35 @@
 
 ! ***********************************************************
 
+#if IBCAO
+      real function vsimax(vect,N)
+      integer   N
+      real vect(N)
+      real tmp
+      integer   i
+
+      tmp = vect(1)
+      do i=2,N
+        tmp = max(tmp,vect(i))
+      enddo
+      vsimax = tmp
+      return
+      end
+
+      real function vsimin(vect,N)
+      integer   N
+      real vect(N)
+      real tmp
+      integer   i
+
+      tmp = vect(1)
+      do i=2,N
+        tmp = min(tmp,vect(i))
+      enddo
+      vsimin = tmp
+      return
+      end
+#else
       integer*2 function vsimax(vect,N)
       integer   N
       integer*2 vect(N)
@@ -516,6 +555,7 @@
       vsimin = tmp
       return
       end
+#endif
 
 ! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

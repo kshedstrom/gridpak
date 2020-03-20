@@ -314,6 +314,7 @@
 
 !****************************************************************
 
+#ifdef PLOTS
       subroutine plotmnf(gridid,colour,grover)
 #include "bathy.h"
       real            tmp(L,M), tmp2(L,M), tmp3(L,M), htmp(0:L,0:M)
@@ -576,3 +577,4 @@
 
       return
       end
+#endif
