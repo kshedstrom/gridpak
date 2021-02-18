@@ -56,7 +56,7 @@
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
 #elif ARDEM
       parameter     ( evenflag = .true. )
-      parameter     ( ILON=6601, ILAT=3601)
+      parameter     ( ILON=6601, ILAT=4201)
       parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/120.d0)
 #elif PALAU_BATHY
       parameter     ( evenflag = .false. )
@@ -150,6 +150,12 @@
       enddo
 # endif
 #endif   /* ETOPO5 || ETOPO2 */
+#if IBCAO
+! John's interpolation put NaN in the last column. :(
+      do j=1,ILAT
+        bathy(ILON,j) = bathy(1,j)
+      enddo
+#endif
 
 !  Our convention has been negative for land elevations
       do j=1,ILAT
@@ -270,11 +276,14 @@
 #endif
             x1 = lon_rho(i,j) - (alonw + (i1-1.)*DELTA_X)
             y1 = lat_rho(i,j) - (alats + (j1-1.)*DELTA_Y)
-!           print *, 'Interpolating', i, j, i1, j1, x1, y1
             corner(1,1) = bathy(i1,j1)
             corner(1,2) = bathy(i1,j1+1)
             corner(2,1) = bathy(i1+1,j1)
             corner(2,2) = bathy(i1+1,j1+1)
+            if (i==286 .and. j==519) then
+              print *, 'Interpolating', i, j, i1, j1, x1, y1
+              print *, 'Corners', corner
+            endif
             htmp1 = corner(1,1) + (corner(2,1)-corner(1,1))*x1/DELTA_X
             htmp2 = corner(1,2) + (corner(2,2)-corner(1,2))*x1/DELTA_X
             h(i,j) = htmp1 + (htmp2-htmp1)*y1/DELTA_Y

@@ -1,51 +1,39 @@
-Warning! This thing does not depend on the NCARG library any more, but
-the order of operations is not at all obvious. Do up through bathtub,
-and optaining the merged bathymetry. Then the Sasha operations, then
-sphere, then editmask, then the bathy smoothing, then sphere again.
+grid_Arctic_2:
+#xpots -N 2017 -F fort.41
+xpots -N 2177 -F fort.43
 
-For Chukchi 3 hraw:
+With hmin = 10 on ETOPO1 bathymetry:
+300 passes of bathsuds, 1 of bathsoap.
 
-1, 2: Ibcao 3 and Ibcao 3 clipped.
-3, 4: ARDEM 2 and ARDEM 2 clipped.
-5: combo of 2 and 4.
-6: 11 passes of bathsuds.
-7: 1 pass of bathsoap
 
-For Chukchi 4 hraw:
+grid_Arctic_3: same grid as above, more land masking and this bathymetry:
 
-1, 2: ARDEM 2 and ARDEM 2 clipped.
-3, 4: Ibcao 3 and Ibcao 3 clipped.
-5: combo of 2 and 4.
-6: 9 passes of bathsuds.
-7: 1 pass of bathsoap
+With hmin = 2 and combo bathymetry:
+hraw = 1 SRTM30
+hraw = 2 SRTM30 clipped to 2 m
+hraw = 3 IBCAO3
+hraw = 4 IBCAO3 clipped to 2 m
+hraw = 5 AOOS
+hraw = 6 AOOS clipped to 2 m
+hraw = 7 best of the lot of them, clipped to 2 m
+hraw = 8,9: 30 bathsuds, 1 bathsoap
 
-For Chukchi 5 hraw:
+grid_Arctic_4: same grid as above, bathymetry from Arctic3, Hudson bay opened up again,
+get rid of 1-grid bays/passages where there could be ice. Probably need some
+dredging...
 
-1, 2: ARDEM 2 and ARDEM 2 clipped.
-3, 4: Ibcao 3 and Ibcao 3 clipped.
-5: combo of 2 and 4.
-6: 5 passes of bathsuds.
-7: 1 pass of bathsoap
+With hmin = 2 and combo bathymetry:
+hraw = 7 best of the lot of them, clipped to 2 m
+hraw = 8,9: 24 bathsuds, 1 bathsoap
 
-I ran Sasha's
+grid_Arctic_5: same land mask as Arctic4, edited around Cook Inlet,
+PWS. Keeping the old bathymetries, but adding IBCAO4 (remapped to lon,lat
+by John Pender).
+hraw = 10 IBCAO4
+hraw = 11 IBCAO4 clipped to 2 m
+hraw = 12 best of the lot of them, clipped to 2 m
 
-        gshhs_to_roms_mask grid_Chukchi_5.nc
-	copymask mask.nc grid_Chukchi_5.nc
-	single_connect_cb 200 200 grid_Chukchi_5.nc
+hraw = 13 deepening upper Cook Inlet to match hraw = 9.
 
-Note that single_connect keeps one-grid bays while single_connect_cb
-closes the one-grid bays (compile-time switch). Sasha's tools only
-update the mask_rho. Ideally, ROMS would just read that and compute
-consistent mask_u, mask_v but that's not how it goes today, though ROMS
-does compute mask_psi.
-
-Note 2 on single_connect: It was hanging for me, not even giving
-consistent output, but consistently not finishing. I started up inside
-totalview and it ran like a charm in no time at all:
-
-   mpirun -tv -np 1 ~/bin/single_connect_cb 200 200 grid_Chukchi_5.nc
-
-In fact, this works great without the -tv switch.
-
-Note 3: Turn a bay into a lake and single_connect will do the rest of
-the filling in. A shortcut!
+Since this grid will be used with MOM6, it is unclear how much (if any)
+smoothing is appropriate.
