@@ -29,9 +29,9 @@
 #undef X_WIN
 
 #undef SYS_POTS       /* unimplimented system calls */
-#define XPOTS1	 1     /* read ipot1 file */
+#undef XPOTS1	      /* read ipot1 file */
 #undef XPOTS2	      /* read ipot2 file */
-#undef XPOTS3	      /* read ipot3 file */
+#define XPOTS3	 1     /* read ipot3 file */
 #undef XPOTS4	      /* read ipot4 file */
 
 #ifdef cray

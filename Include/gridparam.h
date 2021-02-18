@@ -1,2 +1,2 @@
       integer         Lm, Mm
-      parameter (     Lm=376      , Mm=256      )
+      parameter (     Lm=688      , Mm=1088      )

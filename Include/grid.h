@@ -9,7 +9,7 @@
 !  original distribution of x,y points is preserved on boundary kb1
 !  and kb2:
       integer         kb1, kb2
-      parameter (     kb1 = 1, kb2 = 2   )
+      parameter (     kb1 = 3, kb2 = 2   )
 
       integer         L2, M2, L2big, M2big, nwrk
       integer         N, N1, N2, N3, N4

@@ -39,12 +39,13 @@
 !  Write out Coriolis parameter.
 !
       if (spherical == 0) then
-        rcode = nf90_inq_varid(ncgridid,'spherical',varid)
-        rcode = nf90_put_var(ncgridid,varid,0)
-        if (rcode.ne.0) then
-          write(stdout,10) 'spherical', TRIM(gridfile)
-          call crash ('WRT_FHMN',1)
-        endif
+! HACK! Changed from char to int so now the write fails.
+!        rcode = nf90_inq_varid(ncgridid,'spherical',varid)
+!        rcode = nf90_put_var(ncgridid,varid,0)
+!        if (rcode.ne.0) then
+!          write(stdout,10) 'spherical', TRIM(gridfile)
+!          call crash ('WRT_FHMN',1)
+!        endif
         rcode = nf90_inq_varid(ncgridid,'f0',varid)
         rcode = nf90_put_var(ncgridid,varid,f0)
         if (rcode.ne.0) then
@@ -78,11 +79,12 @@
 !
       rcode = nf90_inq_varid(ncgridid,'spherical',varid)
       if (spherical == 1) then
-        rcode = nf90_put_var(ncgridid,varid,1)
-        if (rcode.ne.0) then
-          write(stdout,20) 'spherical', TRIM(gridfile)
-          call crash ('WRT_FHMN',1)
-        endif
+! HACK! Changed from char to int so now the write fails.
+!        rcode = nf90_put_var(ncgridid,varid,1)
+!        if (rcode.ne.0) then
+!          write(stdout,20) 'spherical', TRIM(gridfile)
+!          call crash ('WRT_FHMN',1)
+!        endif
         rcode = nf90_inq_varid(ncgridid,'pm',varid)
         rcode = nf90_put_var(ncgridid,varid,pm)
         if (rcode.ne.0) then
