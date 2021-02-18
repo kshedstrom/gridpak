@@ -13,7 +13,7 @@
 #define DBLEPREC      1
 
 ! to draw coastlines on some plots
-#define DRAW_COASTS   1
+#undef DRAW_COASTS   1
 
 ! to keep ellipsoidal terms in Earth's shape
 #define ELLIPSOID     1
@@ -29,7 +29,7 @@
 #undef X_WIN
 
 #undef SYS_POTS       /* unimplimented system calls */
-#define XPOTS1	 1     /* read ipot1 file */
+#undef XPOTS1	      /* read ipot1 file */
 #undef XPOTS2	      /* read ipot2 file */
 #undef XPOTS3	      /* read ipot3 file */
 #undef XPOTS4	      /* read ipot4 file */
