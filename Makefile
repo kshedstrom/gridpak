@@ -35,7 +35,7 @@ endif
 
   sources    :=
   libraries  :=
-  includes   := Include
+  includes   := Include_Arctic
 # includes   := Include_Is
 # includes   := Include_Ben
 # includes   := Include_S_Africa

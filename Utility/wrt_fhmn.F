@@ -22,7 +22,8 @@
 !  Define local data.
 !-----------------------------------------------------------------------
 !
-      BIGREAL f0, beta
+      integer f0
+      BIGREAL beta
 !
 !=======================================================================
 !  Begin Executable code.
@@ -39,13 +40,12 @@
 !  Write out Coriolis parameter.
 !
       if (spherical == 0) then
-! HACK! Changed from char to int so now the write fails.
-!        rcode = nf90_inq_varid(ncgridid,'spherical',varid)
-!        rcode = nf90_put_var(ncgridid,varid,0)
-!        if (rcode.ne.0) then
-!          write(stdout,10) 'spherical', TRIM(gridfile)
-!          call crash ('WRT_FHMN',1)
-!        endif
+        rcode = nf90_inq_varid(ncgridid,'spherical',varid)
+        rcode = nf90_put_var(ncgridid,varid,0)
+        if (rcode.ne.0) then
+          write(stdout,10) 'spherical', TRIM(gridfile)
+          call crash ('WRT_FHMN',1)
+        endif
         rcode = nf90_inq_varid(ncgridid,'f0',varid)
         rcode = nf90_put_var(ncgridid,varid,f0)
         if (rcode.ne.0) then
@@ -79,7 +79,6 @@
 !
       rcode = nf90_inq_varid(ncgridid,'spherical',varid)
       if (spherical == 1) then
-! HACK! Changed from char to int so now the write fails.
         rcode = nf90_put_var(ncgridid,varid,1)
         if (rcode.ne.0) then
           write(stdout,20) 'spherical', TRIM(gridfile)

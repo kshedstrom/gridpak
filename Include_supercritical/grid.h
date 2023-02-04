@@ -1,8 +1,7 @@
 #include "griddefs.h"
 #include "bathy.h"
-      integer         ITMAX, IBIG
-      parameter (     ITMAX=8, IBIG=400    )
-!  ITMAX is the number of iterations to perform
+      integer         IBIG
+      parameter (     IBIG=4000    )
 !  IBIG is the largest number of points to be read in for one
 !  boundary.
 !
@@ -45,7 +44,7 @@
      &                even1, even2, even3, even4
       parameter   (  rbnd1=.true., rbnd2=.true., &
      &               rbnd3=.true., rbnd4=.true., &
-     &               even1=.false., even2=.true., &
+     &               even1=.true., even2=.true., &
      &               even3=.true., even4=.true.  )
 
 !  The following are used when you need to fit a boundary with
@@ -68,8 +67,8 @@
 !  to be used in generating a nested domain.
       logical        subset
       integer        Lwest, Least, Msouth, Mnorth, iout3
-      parameter    ( subset = .false., Lwest = 144, Least = 272, &
-     &               Msouth = 160, Mnorth = 248, iout3 = 15    )
+      parameter    ( subset = .false., Lwest = 10, Least = 20, &
+     &               Msouth = 10, Mnorth = 20, iout3 = 15    )
 
 !  xpots unit numbers
       integer         ipot1, ipot2, ipot3, ipot4

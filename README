@@ -1,3 +1,42 @@
+This is grid generation software used for building ROMS grids the
+old-fashioned way. The manual (which needs updating) is here:
+    https://marine.rutgers.edu/po/tools/gridpak/grid_manual.ps.gz
+
+You must have consistent versions of a Fortran compiler and the NetCDF library.
+I used to use NCL for plots and you can still enable the plotting if you want.
+
+I'm distributing it with several test cases, each with their own Include
+directory. Point to the appropriate Include directory in the Makefile. The
+grid input file(s) are in the current directory. The domains here:
+
+* Benguela: a rotated rectangular grid
+  Notes on Benguela bathymetry:
+       hmin=50, 300 bathsuds, 1 bathsoap => 0.33 rmax
+* Bering Strait: a non-rotated rectangle
+* Island: a small very curvilinear toy domain between Iceland and Greenland
+* S_Africa: a U-shaped domain around southern Africa using xpots on side 2:
+    xpots -N 1601 -F fort.42
+* Supercritical: an idealized test problem in x,y space with a flat bottom
+* Arctic_6: Pan-Arctic grid being run with MOM6
+
+Issues:
+
+* There's something wrong with the Makefile dependencies and I don't know
+  why - trying to do everything the ROMS way (and the ROMS way works). Best
+  to do "make clean" between builds if anything at all goes wrong.
+
+* I'd put xpots out on github if it was working... The graphics now show
+  up for me all in black, so it's quite tricky to use.
+
+* I'm using Tolat2 to do the inverse map projection. There's got to be a better way.
+
+=Arctic notes
+With hmin = 2 and combo bathymetry:
+hraw = 1 GEBCO_2020
+hraw = 2 GEBCO_2020 clipped to 2 m
+
+* Getting the Arctic land mask with Sasha's codes from https://www.myroms.org/forum/viewtopic.php?t=3878
+
         gshhs_to_roms_mask grid_Arctic_6.nc
 	copymask mask.nc grid_Arctic_6.nc
 	mpirun -np 1 single_connect 500 1 grid_Arctic_6.nc
@@ -9,11 +48,3 @@
         gshhs_to_roms_mask grid_Arctic_3km.nc
 	copymask mask.nc grid_Arctic_3km.nc
 	mpirun -np 1 single_connect 1200 1 grid_Arctic_3km.nc
-
-
-grid_Arctic_6: same grid as above, more land masking and this bathymetry:
-
-With hmin = 2 and combo bathymetry:
-hraw = 1 GEBCO_2020
-hraw = 2 GEBCO_2020 clipped to 2 m
-

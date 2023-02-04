@@ -4,7 +4,7 @@
 #undef ETOPO5
 #undef ETOPO2
 #undef ETOPO1
-#undef SRTM30
+#define SRTM30  1
 #undef GEBCO
 #undef IBCAO
 #undef ARDEM
@@ -16,16 +16,16 @@
 #define DRAW_COASTS   1
 
 ! to keep ellipsoidal terms in Earth's shape
-#undef ELLIPSOID
+#define ELLIPSOID     1
 
 ! for averaging bathymetry in gridbox (for EW/NS grids only)
 #undef IMG_AVG
 
-#define KEEP_SHALLOW 1
+#undef KEEP_SHALLOW
 
-! for NCAR graphics (3.2 or better) */
+! for NCAR graphics (3.2 or better)
 #define PLOTS	     1
-! for X windows rather than metafile */
+! for X windows rather than metafile
 #undef X_WIN
 
 #undef SYS_POTS       /* unimplimented system calls */

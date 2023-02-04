@@ -1,10 +1,10 @@
 ! define one of these as 1 for reading the respective bathymetry.
 ! Otherwise, it defaults to using the BATHY_FILE environment variable,
 ! here with the dimensions of the Smith and Sandwell subset for USwest.
-#define ETOPO5   1
+#undef ETOPO5
 #undef ETOPO2
 #undef ETOPO1
-#undef SRTM30
+#define SRTM30  1
 #undef GEBCO
 #undef IBCAO
 #undef ARDEM
@@ -23,14 +23,14 @@
 
 #undef KEEP_SHALLOW
 
-! for NCAR graphics (3.2 or better) */
+! for NCAR graphics (3.2 or better)
 #define PLOTS	     1
-! for X windows rather than metafile */
+! for X windows rather than metafile
 #undef X_WIN
 
 #undef SYS_POTS       /* unimplimented system calls */
-#undef XPOTS1	      /* read ipot1 file */
-#undef XPOTS2	      /* read ipot2 file */
+#undef XPOTS1	       /* read ipot1 file */
+#define XPOTS2	 1    /* read ipot2 file */
 #undef XPOTS3	      /* read ipot3 file */
 #undef XPOTS4	      /* read ipot4 file */
 
