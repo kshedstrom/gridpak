@@ -80,11 +80,11 @@
       rcode = nf90_inq_varid(ncgridid,'spherical',varid)
       if (spherical == 1) then
 ! HACK! Changed from char to int so now the write fails.
-!        rcode = nf90_put_var(ncgridid,varid,1)
-!        if (rcode.ne.0) then
-!          write(stdout,20) 'spherical', TRIM(gridfile)
-!          call crash ('WRT_FHMN',1)
-!        endif
+        rcode = nf90_put_var(ncgridid,varid,1)
+        if (rcode.ne.0) then
+          write(stdout,20) 'spherical', TRIM(gridfile)
+          call crash ('WRT_FHMN',1)
+        endif
         rcode = nf90_inq_varid(ncgridid,'pm',varid)
         rcode = nf90_put_var(ncgridid,varid,pm)
         if (rcode.ne.0) then

@@ -855,7 +855,7 @@
 
       complex*16 z(N), z0, zd
       integer    BIG
-      parameter (BIG=8000)
+      parameter (BIG=20000)
       double precision r(BIG), t(BIG), pi, alpha, pwr, pmin, &
      &           pmax, tp
       integer    i, j, k, im, ip

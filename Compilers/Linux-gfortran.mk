@@ -39,7 +39,7 @@
 # Library locations, can be overridden by environment variables.
 #
 
-        NC_CONFIG ?= nc-config
+        NC_CONFIG ?= nf-config
     NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
              LIBS := $(shell $(NC_CONFIG) --flibs)
          CPPFLAGS += -I$(NETCDF_INCDIR)

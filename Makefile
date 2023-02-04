@@ -178,6 +178,7 @@ endef
 
 COAST := $(BINDIR)/coast
 GRID := $(BINDIR)/grid
+SQGRID := $(BINDIR)/sqgrid
 #TOLAT := $(BINDIR)/tolat
 BATHTUB := $(BINDIR)/bathtub
 BATHSUDS := $(BINDIR)/bathsuds

@@ -91,6 +91,18 @@
 !  Extract bathmetry
 !-----------------------------------------------------------------------
 !
+#ifdef GEBCO
+      rcode=nf90_inq_varid(ncinpid,'elevation',varid)
+      if (rcode.eq.0) then
+          rcode = nf90_get_var(ncinpid,varid,topo)
+          if(rcode.ne.0) then
+            write(stdout,900) 'elevation'
+            goto 10
+          endif
+      else
+        write(stdout,901) 'elevation'
+      endif
+#else
       rcode=nf90_inq_varid(ncinpid,'z',varid)
       if (rcode.eq.0) then
           rcode = nf90_get_var(ncinpid,varid,topo)
@@ -101,6 +113,7 @@
       else
         write(stdout,901) 'z'
       endif
+#endif
 !
       goto 20
   10  write(stdout,903)

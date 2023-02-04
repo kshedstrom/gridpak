@@ -19,7 +19,7 @@
      &                N4=M2+L2+M2+L2,  N=N4    )
 !  If sepeli fails with ierror=11, increase KK.
       integer         KK
-      parameter (     KK = 11   )
+      parameter (     KK = 13   )
       parameter (     nwrk = 2*(KK-2)*(2**(KK+1)) + KK + 10*M2big + &
      &                       12*L2big + 27    )
       BIGREAL         sxi(0:L2big), seta(0:M2big)

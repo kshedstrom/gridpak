@@ -5,15 +5,15 @@
 #undef ETOPO2
 #undef ETOPO1
 #undef SRTM30
-#undef GEBCO
-#define IBCAO  1
+#define GEBCO 1
+#undef IBCAO
 #undef ARDEM
 
 ! for 64-bit output
 #define DBLEPREC      1
 
 ! to draw coastlines on some plots
-#undef DRAW_COASTS   1
+#undef DRAW_COASTS
 
 ! to keep ellipsoidal terms in Earth's shape
 #define ELLIPSOID     1
@@ -31,7 +31,7 @@
 #undef SYS_POTS       /* unimplimented system calls */
 #undef XPOTS1	      /* read ipot1 file */
 #undef XPOTS2	      /* read ipot2 file */
-#define XPOTS3	 1     /* read ipot3 file */
+#undef XPOTS3	      /* read ipot3 file */
 #undef XPOTS4	      /* read ipot4 file */
 
 #ifdef cray

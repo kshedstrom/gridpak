@@ -18,6 +18,8 @@
 !  avoid overflowing conpack work arrays.
 !********************************************************************
 
+      use netcdf
+
 #include "griddefs.h"
 #include "bathy.h"
 #include "ncgrid.h"
@@ -26,6 +28,8 @@
       integer         ILON, ILAT
       BIGREAL         DELTA_X, DELTA_Y
       logical         evenflag
+      integer         t2dgrd(2)
+      integer         erdim, xrdim
 #if NJB
       parameter     ( evenflag = .true. )
       parameter     ( ILAT=1319, ILON=2600 )
@@ -52,8 +56,8 @@
       parameter     ( DELTA_X=1/120.d0, DELTA_Y=1/120.d0 )
 #elif GEBCO
       parameter     ( evenflag = .true. )
-      parameter     ( ILON=360*60+1, ILAT=180*60+1 )
-      parameter     ( DELTA_X=1/60.d0, DELTA_Y=1/60.d0 )
+      parameter     ( ILON=360*60*4+2, ILAT=180*60*4 )
+      parameter     ( DELTA_X=1/240.d0, DELTA_Y=1/240.d0 )
 #elif ARDEM
       parameter     ( evenflag = .true. )
       parameter     ( ILON=6601, ILAT=4201)
@@ -71,7 +75,7 @@
       real, allocatable      ::       bathy(:,:)
 #else
       integer*2, allocatable ::       bathy(:,:)
-#if ETOPO5 || ETOPO2 || SRTM30
+#if ETOPO5 || ETOPO2 || SRTM30 || GEBCO
       integer*2, allocatable ::       bathy2(:,:)
 #endif
 #endif
@@ -89,6 +93,7 @@
       BIGREAL         depthmxr, depthmnr,                               &
      &                htmp1, htmp2, x1, y1
       BIGREAL         vmin, vmax
+      BIGREAL         mask_tmp(0:L,0:M)
 #if IBCAO
       real            vsimin, vsimax
 #else
@@ -109,6 +114,8 @@
       allocate(bathy(ILON,ILAT))
 #if ETOPO5 || ETOPO2 || SRTM30
       allocate(bathy2(ILON-1,ILAT))
+#elif GEBCO
+      allocate(bathy2(ILON-2,ILAT))
 #endif
 !  depths less than depthmin will be set to depthmin
       print *, 'minimum depth (negative is land elevation)'
@@ -138,6 +145,21 @@
       enddo
       do j=1,ILAT
         bathy(ILON,j) = bathy(1,j)
+      enddo
+#elif GEBCO
+      call extract(lon,lat,bathy2,ILON-2,ILAT)
+!  Longitudes between 0 and 360
+      lon(ILON-1) = lon(1)+360.
+      lon(ILON) = lon(2)+360.
+!  Copy value at one end of the Earth to other end
+      do i=1,ILON-2
+        do j=1,ILAT
+           bathy(i,j) = bathy2(i,j)
+        enddo
+      enddo
+      do j=1,ILAT
+        bathy(ILON,j) = bathy(2,j)
+        bathy(ILON-1,j) = bathy(1,j)
       enddo
 #else
       call extract(lon,lat,bathy,ILON,ILAT)
@@ -169,9 +191,9 @@
       alonw = vmin(lon,ILON)
       alone = vmax(lon,ILON)
 
-      depthmxr = vsimax(bathy,ILON*ILAT)
+      depthmxr = maxval(bathy)
       print *,' Maximum depth read is ',depthmxr
-      depthmnr = vsimin(bathy,ILON*ILAT)
+      depthmnr = minval(bathy)
       print *,' Minimum depth read is ',depthmnr
 
       call get_lat
@@ -185,11 +207,19 @@
 #if ETOPO5
       if (minlon .lt. 0.) then
 #endif /* ETOPO5 */
+#ifdef GEBCO
+        do j=0,M
+          do i=0,L
+            if (lon_rho(i,j) .lt. -179.99791666666667) lon_rho(i,j) = lon_rho(i,j) + 360.
+          enddo
+        enddo
+#else
         do j=0,M
           do i=0,L
             if (lon_rho(i,j) .lt. 0.) lon_rho(i,j) = lon_rho(i,j) + 360.
           enddo
         enddo
+#endif
         minlon = vmin(lon_rho,Lp*Mp)
         maxlon = vmax(lon_rho,Lp*Mp)
 #if ETOPO5
@@ -325,6 +355,35 @@
             endif
           enddo
         enddo
+
+#if DBLEPREC || defined cray
+        vartyp=nf90_double
+#else
+        vartyp=nf90_float
+#endif /* DBLEPREC */
+        rcode = nf90_open(TRIM(gridfile), nf90_write, ncgridid)
+        rcode = nf90_inq_dimid(ncgridid,'xi_rho',xrdim)
+        rcode = nf90_inq_dimid(ncgridid,'eta_rho',erdim)
+        rcode = nf90_inq_varid(ncgridid,'mask_rho',varid)
+        rcode = nf90_get_var(ncgridid,varid,mask_tmp)
+        do i=0,L
+          do j=0,M
+            mask_tmp(i,j) = mask_tmp(i,j) - mask_rho(i,j)
+          enddo
+        enddo
+        t2dgrd(1)=xrdim
+        t2dgrd(2)=erdim
+        rcode = nf90_redef(ncgridid)
+!       rcode = nf90_def_var(ncgridid,'mask_2',vartyp,t2dgrd,varid)
+!       rcode = nf90_put_att(ncgridid,varid,'long_name', &
+!    &              'mask on RHO-points')
+!       rcode = nf90_put_att(ncgridid,varid,'flag_values', '0., 1.')
+!       rcode = nf90_put_att(ncgridid,varid,'flag_meanings', &
+!          'land, water')
+        rcode = nf90_def_var(ncgridid,'mask_diff',vartyp,t2dgrd,varid)
+        rcode = nf90_put_var(ncgridid,varid,mask_tmp)
+        rcode = nf90_close(ncgridid)
+!       call exit(0)
         call uv_mask
 
 !  Write mask
@@ -507,66 +566,6 @@
       end
 
 ! ***********************************************************
-
-#if IBCAO
-      real function vsimax(vect,N)
-      integer   N
-      real vect(N)
-      real tmp
-      integer   i
-
-      tmp = vect(1)
-      do i=2,N
-        tmp = max(tmp,vect(i))
-      enddo
-      vsimax = tmp
-      return
-      end
-
-      real function vsimin(vect,N)
-      integer   N
-      real vect(N)
-      real tmp
-      integer   i
-
-      tmp = vect(1)
-      do i=2,N
-        tmp = min(tmp,vect(i))
-      enddo
-      vsimin = tmp
-      return
-      end
-#else
-      integer*2 function vsimax(vect,N)
-      integer   N
-      integer*2 vect(N)
-      integer*2 tmp
-      integer   i
-
-      tmp = vect(1)
-      do i=2,N
-        tmp = max(tmp,vect(i))
-      enddo
-      vsimax = tmp
-      return
-      end
-
-      integer*2 function vsimin(vect,N)
-      integer   N
-      integer*2 vect(N)
-      integer*2 tmp
-      integer   i
-
-      tmp = vect(1)
-      do i=2,N
-        tmp = min(tmp,vect(i))
-      enddo
-      vsimin = tmp
-      return
-      end
-#endif
-
-! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
       subroutine locate(xx,n,x,j)
 
